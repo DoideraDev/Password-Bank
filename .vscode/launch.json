@@ -1,0 +1,36 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "com.doideradev.passwordbank/com.doideradev.passwordbank.Main",
+            "projectName": "main-app"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "com.doideradev.passwordbank/com.doideradev.passwordbank.App",
+            "projectName": "main-app"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "com.doideradev.uninstaller/com.doideradev.uninstaller.App",
+            "projectName": "uninstaller"
+        },
+        {
+            "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "com.doideradev.updater/com.doideradev.updater.App",
+            "projectName": "updater"
+        }
+    ]
+}

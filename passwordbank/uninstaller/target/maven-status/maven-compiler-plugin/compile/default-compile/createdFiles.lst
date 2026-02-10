@@ -1,0 +1,8 @@
+com\doideradev\uninstaller\utilities\PopupError.class
+com\doideradev\uninstaller\utilities\UninstallerManager.class
+com\doideradev\uninstaller\controllers\PopupController.class
+com\doideradev\uninstaller\utilities\AppConfigs.class
+com\doideradev\uninstaller\App.class
+com\doideradev\uninstaller\Main.class
+module-info.class
+com\doideradev\uninstaller\controllers\UninstallerController.class

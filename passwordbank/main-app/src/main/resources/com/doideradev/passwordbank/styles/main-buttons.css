@@ -1,0 +1,131 @@
+.button-close {
+    -fx-background-image: url("../Close-sign.png");
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+    -fx-background-radius: 0, 5, 0, 0;
+    -fx-boder-radius: 0, 5, 0, 0;
+}
+.button-close:hover {
+    -fx-background-image: url("../Close-sign.png");
+    -fx-background-color: Red;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+    -fx-background-radius: 0 5 0 0;
+    -fx-border-radius: 0 5 0 0;
+}
+
+.button-maximize {
+    -fx-background-image: url("../Maximize-sign.png");
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+}
+.button-maximize:hover {
+    -fx-background-image: url("../Maximize-sign.png");
+    -fx-background-color: rgb(0, 0, 0, 0.3);
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+}
+
+.button-minimize {
+    -fx-background-image: url("../Minimize-sign.png");
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+}
+.button-minimize:hover {
+    -fx-background-image: url("../Minimize-sign.png");
+    -fx-background-color: rgb(0, 0, 0, 0.3);
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+}
+
+
+
+
+
+.button-menu {
+    -fx-background-image: url("../Menu.png");
+    -fx-background-color: transparent;
+    -fx-background-position: left 10px center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 30px;
+}
+.button-home {
+    -fx-background-image: url("../Home.png");
+    -fx-background-color: transparent;
+    -fx-background-position: left 10px center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 30px;
+}
+.button-settings {
+    -fx-background-image: url("../Settings.png");
+    -fx-background-color: transparent;
+    -fx-background-position: left 10px center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 30px;
+}
+.button-password {
+    -fx-background-image: url("../Password.png");
+    -fx-background-color: transparent;
+    -fx-background-position: left 12px center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 30px;
+}
+
+
+
+
+
+
+.scroll-pane {
+    -fx-background-radius: 0 0 8 0;
+    -fx-border-radius: 0 0 8 0;
+    -fx-border-width: 2;
+}
+.scroll-bar {-fx-background-color: transparent;}
+.corner {-fx-background-color: transparent;}
+
+
+.scroll-bar:horizontal .decrement-button,
+.scroll-bar:horizontal .increment-button {
+    -fx-background-color: transparent;
+}
+.scroll-bar:vertical .decrement-button,
+.scroll-bar:vertical .increment-button {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:horizontal .decrement-button .decrement-arrow,
+.scroll-bar:horizontal .increment-button .increment-arrow {
+    -fx-background-color: #8A58EE;
+}
+.scroll-bar:vertical .decrement-button .decrement-arrow,
+.scroll-bar:vertical .increment-button .increment-arrow {
+    -fx-background-color: #8A58EE;
+}
+
+
+.scroll-bar:horizontal .thumb {
+    -fx-background-color: #8A58EE;
+    -fx-background-radius: 25px;
+}
+.scroll-bar:horizontal .thumb:active, .scroll-bar:horizontal .thumb:hover {
+    -fx-background-color: #8A58EECC;
+    -fx-background-radius: 25px;
+}
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #8A58EE;
+    -fx-background-radius: 25px;
+}
+.scroll-bar:vertical .thumb:active, .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #8A58EECC;
+    -fx-background-radius: 25px;
+}

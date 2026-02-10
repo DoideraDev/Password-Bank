@@ -1,0 +1,111 @@
+.button-Uninstall {
+    -fx-background-image: url("../Delete.png");
+    -fx-background-position: right 10px center;
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 35px;
+    -fx-border-color: RED;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-alignment: left;
+    -fx-text-fill: RED;
+}
+.button-Uninstall:hover {
+    -fx-background-image: url("../Delete.png");
+    -fx-background-position: right 10px center;
+    -fx-background-color: #0000002a;
+    -fx-background-radius: 5px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 35px;
+    -fx-border-color: RED;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-alignment: left;
+    -fx-text-fill: RED;
+}
+.button-Uninstall:focus-visible {
+    -fx-background-image: url("../Delete.png");
+    -fx-background-position: right 10px center;
+    -fx-background-color: #0000002a;
+    -fx-background-radius: 5px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 35px;
+    -fx-border-color: RED;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-alignment: left;
+    -fx-text-fill: RED;
+}
+
+.button-CloseUninstaller {
+    -fx-background-image: url("../Uninstall-close.png");
+    -fx-background-color: transparent;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 24px;
+}
+.button-CloseUninstaller:hover {
+    -fx-background-image: url("../Uninstall-close.png");
+    -fx-background-color: #0000002a;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 24px;
+}
+.button-CloseUninstaller:focus-visible {
+    -fx-background-image: url("../Uninstall-close.png");
+    -fx-background-color: #0000002a;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 24px;
+}
+
+.button-CancelUninstall {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-border-color: #8A59EE;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-fill: #8A59EE;
+}
+.button-CancelUninstall:hover {
+    -fx-background-color: #0000002a;
+    -fx-background-radius: 5px;
+    -fx-border-color: #8A59EE;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-fill: #8A59EE;
+}
+.button-CancelUninstall:focus-visible {
+    -fx-background-color: #0000002a;
+    -fx-background-radius: 5px;
+    -fx-border-color: #8A59EE;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-fill: #8A59EE;
+}
+
+.button-ConfirmUninstall {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5px;
+    -fx-border-color: RED;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-fill: RED;
+}
+.button-ConfirmUninstall:hover {
+    -fx-background-color: #0000002a;
+    -fx-background-radius: 5px;
+    -fx-border-color: RED;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-fill: RED;
+}
+.button-ConfirmUninstall:focus-visible {
+    -fx-background-color: #0000002a;
+    -fx-background-radius: 5px;
+    -fx-border-color: RED;
+    -fx-border-radius:5px;
+    -fx-border-width: 2px;
+    -fx-text-fill: RED;
+}

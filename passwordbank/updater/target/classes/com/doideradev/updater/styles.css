@@ -1,0 +1,15 @@
+.button-minimize {
+    -fx-background-image: url("Minimize-sign.png");
+    -fx-background-color: #804DE5;
+    -fx-background-position: center 15px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: 12px;
+}
+
+.button-minimize:hover {
+    -fx-background-color: #8A8AEE;
+}
+
+.progress-bar {
+    -fx-accent: #804DE5;
+}

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
+
+<GridPane fx:id="gPaneAbout" minHeight="-Infinity" minWidth="-Infinity" prefHeight="840.0" prefWidth="1212.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.doideradev.passwordbank.controllers.AboutScreenController">
+  <columnConstraints>
+      <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+    <ColumnConstraints hgrow="ALWAYS" minWidth="-Infinity" prefWidth="760.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="330.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="100.0" vgrow="NEVER" />
+    <RowConstraints minHeight="-Infinity" prefHeight="400.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="-Infinity" minHeight="50.0" prefHeight="50.0" vgrow="NEVER" />
+    <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="100.0" vgrow="NEVER" />
+      <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="200.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" vgrow="NEVER" />
+  </rowConstraints>
+   <children>
+      <VBox spacing="50.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <children>
+            <Text fx:id="textProjectGitHub" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="310.0">
+               <font>
+                  <Font name="System Bold" size="25.0" />
+               </font>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </Text>
+            <Button fx:id="buttonGitHub" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="100.0" prefWidth="100.0" stylesheets="@../styles/settings-buttons.css">
+               <VBox.margin>
+                  <Insets left="50.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+         <padding>
+            <Insets top="30.0" />
+         </padding>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </VBox>
+      <Button fx:id="buttonBack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="60.0" prefWidth="60.0" stylesheets="@../styles/settings-buttons.css" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Text fx:id="textAbout" strokeType="OUTSIDE" strokeWidth="0.0" text="About" GridPane.columnIndex="1">
+         <font>
+            <Font name="System Bold" size="45.0" />
+         </font>
+         <GridPane.margin>
+            <Insets left="50.0" />
+         </GridPane.margin>
+      </Text>
+      <Text fx:id="textAboutDescription" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <font>
+            <Font size="25.0" />
+         </font>
+         <GridPane.margin>
+            <Insets bottom="50.0" left="100.0" top="30.0" />
+         </GridPane.margin>
+      </Text>
+      <Text fx:id="textUserGuide" strokeType="OUTSIDE" strokeWidth="0.0" text="User guide" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <GridPane.margin>
+            <Insets left="50.0" />
+         </GridPane.margin>
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+      </Text>
+      <VBox spacing="40.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="TOP">
+         <children>
+            <Text fx:id="textGuideDescription" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+               <font>
+                  <Font size="25.0" />
+               </font></Text>
+            <Button fx:id="buttonPDF" contentDisplay="CENTER" graphicTextGap="0.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" stylesheets="@../styles/settings-buttons.css">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <padding>
+                  <Insets left="10.0" />
+               </padding>
+            </Button>
+         </children>
+         <padding>
+            <Insets left="100.0" />
+         </padding>
+      </VBox>
+      <TextFlow fx:id="textFlowApp" textAlignment="RIGHT" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="BOTTOM">
+         <GridPane.margin>
+            <Insets right="15.0" top="10.0" />
+         </GridPane.margin>
+      </TextFlow>
+   </children>
+</GridPane>

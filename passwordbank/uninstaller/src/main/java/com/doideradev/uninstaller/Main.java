@@ -1,0 +1,8 @@
+package com.doideradev.uninstaller;
+
+public class Main {
+
+    public static void main(String[] args) {
+        App.main(args);
+    }
+}
