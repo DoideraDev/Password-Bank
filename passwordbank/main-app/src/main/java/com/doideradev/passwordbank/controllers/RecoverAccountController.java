@@ -1,13 +1,11 @@
 package com.doideradev.passwordbank.controllers;
 
-import java.io.IOException;
-
+import com.doideradev.doiderautils.SceneManager;
 import com.doideradev.passwordbank.App;
 
 import animatefx.animation.SlideInLeft;
 import animatefx.animation.SlideInRight;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -89,42 +87,24 @@ public class RecoverAccountController {
 
     
     private void loadMainPages() {
-        try {
-            FXMLLoader loader1 = new FXMLLoader(App.class.getResource("views/recAccFirst.fxml"));
-            Parent root1 = loader1.load();
-            mainOptCtrl = loader1.getController();
-            mainOptCtrl.controller = this;
-            panePage1 = (Pane) root1;
-            
-            FXMLLoader loader2 = new FXMLLoader(App.class.getResource("views/recAccQuest.fxml"));
-            loader2.setController(mainOptCtrl);
-            Parent root2 = loader2.load();
-            panePage2 = (Pane) root2;
-            
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
-            e.printStackTrace();
-        }
+        Parent root1 = SceneManager.loadPage(App.class, "recAccFirst");
+        mainOptCtrl = (RecoverMainOptController) SceneManager.getController("recAccFirst");
+        mainOptCtrl.RecAccController = this;
+        panePage1 = (Pane) root1;
+        
+        SceneManager.setController("recAccFirst", mainOptCtrl);
+        Parent root2 = SceneManager.loadPage(App.class, "recAccQuest");
+        panePage2 = (Pane) root2;
     }
     
     private void loadAltPages() {
-        try {
-            FXMLLoader loader1 = new FXMLLoader(App.class.getResource("views/recAccAlt1.fxml"));
-            Parent root1 = loader1.load();
-            altOptCtrl = loader1.getController();
-            altOptCtrl.controller = this;
-            panePage1 = (Pane) root1;
-            
-            FXMLLoader loader2 = new FXMLLoader(App.class.getResource("views/recAccAlt2.fxml"));
-            loader2.setController(altOptCtrl);
-            Parent root2 = loader2.load();
-            panePage2 = (Pane) root2;
-            
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
-            e.printStackTrace();
-        }
+        Parent root1 = SceneManager.loadPage(App.class, "recAccAlt1");
+        altOptCtrl = (RecoverAltOptController) SceneManager.getController("recAccAlt1");
+        altOptCtrl.RecAccController = this;
+        panePage1 = (Pane) root1;
+        
+        SceneManager.setController("recAccAlt2", altOptCtrl);
+        Parent root2 = SceneManager.loadPage(App.class, "recAccAlt2");
+        panePage2 = (Pane) root2;
     }
 }

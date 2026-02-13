@@ -35,7 +35,7 @@ public class RecoverAltOptController {
     private String code;
     private final String desktop = System.getProperty("user.home") + "/Desktop/";
     private final String recoverFile = "password.txt";
-    public RecoverAccountController controller;
+    public RecoverAccountController RecAccController;
 
 
     public void initialize() {
@@ -45,7 +45,7 @@ public class RecoverAltOptController {
     private void firstPageActions() {
         buttonNext.setOnMouseClicked(event -> {
             if (verifyFields() && createFile()) {
-                controller.changePage(controller.panePage2, true);
+                RecAccController.changePage(RecAccController.panePage2, true);
                 secondPageActions();
             }
         });

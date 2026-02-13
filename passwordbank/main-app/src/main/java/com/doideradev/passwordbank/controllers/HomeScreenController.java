@@ -100,7 +100,7 @@ public class HomeScreenController {
 
 
     /**
-     * Load the panels in the home screen (most used and oldest registered)
+     * Load the Password panels in the home screen (most used and oldest registered)
      */
     protected void loadHomePanels() {
         if ((App.logs != null) && (App.logs.size() > 2)) {

@@ -1,12 +1,10 @@
 package com.doideradev.passwordbank.controllers;
 
-import java.io.IOException;
-
+import com.doideradev.doiderautils.SceneManager;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.utilities.FXWindowControl;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -55,7 +53,6 @@ public class BaseController {
     private boolean menuMaximized = false;
     private final double minXMenu = 50;
     private final double maxXMenu = 230;
-
 
 
     public void initialize() {
@@ -162,53 +159,31 @@ public class BaseController {
 
     /**
      * <p> Load the main pages (home, passwords and settings) and their controllers
-     * <p> Show an error popup if something goes wrong
      */
     private void loadMainPages() {
-        try {
-            FXMLLoader loader1 = new FXMLLoader(App.class.getResource("views/home.fxml"));
-            Parent root1 = loader1.load();
-            homeCtrl = loader1.getController();
-            homePane = (Pane) root1;
-            
-            FXMLLoader loader2 = new FXMLLoader(App.class.getResource("views/passwords.fxml"));
-            Parent root2 = loader2.load();
-            passCtrl = loader2.getController();
-            passPane = (Pane) root2;
-            
-            FXMLLoader loader3 = new FXMLLoader(App.class.getResource("views/settings.fxml"));
-            Parent root3 = loader3.load();
-            settPane = (Pane) root3;
+        Parent root1 = SceneManager.loadPage(App.class, "home");
+        homeCtrl = (HomeScreenController) SceneManager.getController("home");
+        homePane = (Pane) root1;
 
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
-            e.printStackTrace();
-        }
+        Parent root2 = SceneManager.loadPage(App.class, "passwords");
+        passCtrl = (PasswordScreenController) SceneManager.getController("passwords");
+        passPane = (Pane) root2;
+        
+        Parent root3 = SceneManager.loadPage(App.class, "settings");
+        settPane = (Pane) root3;
     }
-
 
     /**
      * Load a FXML file page and return it as a Pane object
      * @param pageName - Name of the FXML file to be loaded (without the .fxml extension)
-     * @return - The loaded page as a Pane object
+     * @return The loaded page as a Pane object
      */
     protected Pane loadPane(String pageName) {
-        try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("views/" + pageName + ".fxml"));
-            Parent root;
-            root = loader.load();
-            Pane paneToLoad = (Pane) root;
-            return paneToLoad;
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
-            e.printStackTrace();
-        };
-        return null;
+        var parent = SceneManager.loadPage(App.class, pageName);
+        return (Pane) parent;
     }
 
-    
+
     /**
      * Change the current page to the selected one
      * @param nextPane - Pane to be shown

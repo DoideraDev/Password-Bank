@@ -3,6 +3,7 @@ D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doider
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\AppEnums.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\QuestionsList.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\Main.java
+D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\UninstallerInitializer.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\RecoverAccountController.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\RecoverAltOptController.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\UserInfoScreenController.java
@@ -12,7 +13,6 @@ D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doider
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\SettingsScreenController.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\ModalController.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\RecoverMainOptController.java
-D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\PopupError.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\UpdaterManager.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\AboutScreenController.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\FilesManager.java
@@ -21,7 +21,6 @@ D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doider
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\model\AppUser.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\LoginList.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\UninstallerManager.java
-D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\controllers\PopupController.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\FXWindowControl.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\com\doideradev\passwordbank\utilities\ModalManager.java
 D:\Documents\GitHub\Password-Bank\passwordbank\main-app\src\main\java\module-info.java

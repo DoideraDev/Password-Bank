@@ -46,7 +46,7 @@ public class RecoverMainOptController {
     @FXML private Text textDescQuest;
     @FXML private VBox vBoxQuestions;
 
-    public RecoverAccountController controller;
+    public RecoverAccountController RecAccController;
     private String[] questions = {App.user.getQuestion1(), App.user.getQuestion2(), App.user.getQuestion3()};
     private String[] answers = {App.user.getAnswer1(), App.user.getAnswer2(), App.user.getAnswer3()};
     private int currentIndex = 0;
@@ -63,13 +63,13 @@ public class RecoverMainOptController {
         buttonConfirmEmail.setText("Confirm");
         buttonConfirmEmail.setOnKeyPressed(event -> {
             if (event.getCode().equals(KeyCode.ENTER) && verifyUserInfo()) {
-                controller.changePage(controller.panePage2, true);
+                RecAccController.changePage(RecAccController.panePage2, true);
                 secondPageActions();
             }
         });
         buttonConfirmEmail.setOnMouseClicked(event -> {
             if (verifyUserInfo()) {
-                controller.changePage(controller.panePage2, true);
+                RecAccController.changePage(RecAccController.panePage2, true);
                 secondPageActions();
             }
         });

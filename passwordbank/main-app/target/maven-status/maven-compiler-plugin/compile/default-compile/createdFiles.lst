@@ -9,7 +9,7 @@ com\doideradev\passwordbank\utilities\LoginList.class
 com\doideradev\passwordbank\controllers\SettingsScreenController.class
 com\doideradev\passwordbank\App.class
 com\doideradev\passwordbank\utilities\PasswordFXElement.class
-com\doideradev\passwordbank\utilities\PopupError.class
+com\doideradev\passwordbank\utilities\UninstallerInitializer.class
 com\doideradev\passwordbank\controllers\PasswordScreenController.class
 com\doideradev\passwordbank\controllers\StartScreenController.class
 com\doideradev\passwordbank\model\Password.class
@@ -20,7 +20,6 @@ com\doideradev\passwordbank\utilities\AppEnums$ScreenSize.class
 com\doideradev\passwordbank\controllers\PasswordScreenController$1.class
 com\doideradev\passwordbank\utilities\PasswordFXElement$1.class
 com\doideradev\passwordbank\model\Login.class
-com\doideradev\passwordbank\controllers\PopupController.class
 com\doideradev\passwordbank\utilities\ModalManager.class
 com\doideradev\passwordbank\utilities\FXWindowControl$1.class
 com\doideradev\passwordbank\utilities\AppConfigs.class

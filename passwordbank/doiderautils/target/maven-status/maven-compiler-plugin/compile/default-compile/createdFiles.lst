@@ -1,3 +1,6 @@
 com\doideradev\doiderautils\AppConfigs.class
-module-info.class
 com\doideradev\doiderautils\SceneManager.class
+com\doideradev\doiderautils\AppErrorLogger.class
+module-info.class
+com\doideradev\doiderautils\popup\PopupController.class
+com\doideradev\doiderautils\popup\PopupError.class

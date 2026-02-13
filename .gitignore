@@ -3,8 +3,6 @@ uninstaller-launcher.properties
 updater-launcher.properties
 javafx-jmods-*
 Icon.ico
-dist
-build
-runtime
 *.bat
 *.jar
+Distribution

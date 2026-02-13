@@ -59,7 +59,6 @@ public abstract class UpdaterManager {
                 } else System.out.println("You are up to date.");
     
             } catch (Exception e) {
-                // Determine if the error is due to internet connectivity
                 boolean isConnectionError = e instanceof java.net.UnknownHostException || 
                 e instanceof java.net.ConnectException ||
                 e instanceof java.net.SocketException ||
