@@ -1,5 +1,6 @@
 package com.doideradev.passwordbank.controllers;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.passwordbank.App;
 
 import animatefx.animation.SlideInRight;
@@ -17,7 +18,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
-public class RecoverMainOptController {
+public class RecoverMainOptController implements Controller {
     
     
     @FXML private Button buttonConfirmEmail;
@@ -54,33 +55,26 @@ public class RecoverMainOptController {
     
 
     public void initialize() {
-        firstPageActions();
+        setActions();
+        setTexts();
     }
 
 
-    private void firstPageActions() {
-        buttonConfirmEmail.getStyleClass().setAll("button-Confirm");
-        buttonConfirmEmail.setText("Confirm");
+    @Override
+    public void setActions() {
+        // Actions for the first page
         buttonConfirmEmail.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER) && verifyUserInfo()) {
-                RecAccController.changePage(RecAccController.panePage2, true);
-                secondPageActions();
-            }
+            if (event.getCode().equals(KeyCode.ENTER) && verifyUserInfo()) RecAccController.changePage(RecAccController.panePage2, true);
+            
         });
         buttonConfirmEmail.setOnMouseClicked(event -> {
-            if (verifyUserInfo()) {
-                RecAccController.changePage(RecAccController.panePage2, true);
-                secondPageActions();
-            }
+            if (verifyUserInfo()) RecAccController.changePage(RecAccController.panePage2, true);
         });
         if (App.user.getMobileNumber() == null || App.user.getMobileNumber().isBlank()) {
             vBoxMain.getChildren().remove(vBoxPhoneNum);
         }
         
-        textEmalDesc.setText("Confirm your registered emails in the fields bellow. ");
-
-        labelMainEmail.setText("Your main Email");
-        labelAltEmail.setText("Your alternative Email");
+        
         lHintAltEmail.setVisible(false);
         lHintMainEmail.setVisible(false);
         lHintPhoneNum.setVisible(false);
@@ -103,13 +97,11 @@ public class RecoverMainOptController {
         textMainEmail.setText(changeEmail(App.user.getMainEmail()));
         textAltEmail.setText(changeEmail(App.user.getAltEmail()));
 
-    }
-    private void secondPageActions() {
-        buttonNextQuestion.getStyleClass().setAll("button-RightArrow");
-        buttonNextQuestion.setText("Next");
+
+        // Actions for the second page
         buttonNextQuestion.setOnKeyPressed(event -> {if(event.getCode().equals(KeyCode.ENTER))buttonQuestionsAction();});
         buttonNextQuestion.setOnMouseClicked(event -> buttonQuestionsAction());
-
+        
         cBoxQuestions.setValue(questions[currentIndex]);
         tAreaAnswers.setOnKeyTyped(event -> {
             tAreaAnswers.setStyle(null);
@@ -117,6 +109,17 @@ public class RecoverMainOptController {
             labelHintAnswer.setVisible(false);
         });
         labelHintAnswer.setVisible(false);
+    }
+
+
+    private void setTexts() {
+        buttonConfirmEmail.setText("Confirm");
+        textEmalDesc.setText("Confirm your registered emails in the fields bellow. ");
+
+        labelMainEmail.setText("Your main Email");
+        labelAltEmail.setText("Your alternative Email");
+
+        buttonNextQuestion.setText("Next");
         textDescQuest.setText("Please provide the answer for the question " + (currentIndex+1));
     }
 
@@ -251,4 +254,12 @@ public class RecoverMainOptController {
         
         return emailMod;
     }
+
+
+    @Override
+    public void setElementsStyle(boolean darkMode) {
+        buttonConfirmEmail.getStyleClass().setAll("button-Confirm");
+        buttonNextQuestion.getStyleClass().setAll("button-RightArrow");
+    }
+
 }

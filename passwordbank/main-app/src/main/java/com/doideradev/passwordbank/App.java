@@ -9,6 +9,7 @@ import com.doideradev.passwordbank.utilities.FilesManager;
 import com.doideradev.passwordbank.utilities.LoginList;
 import com.doideradev.passwordbank.utilities.UpdaterManager;
 import com.doideradev.passwordbank.utilities.AppConfigs;
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.doiderautils.SceneManager;
 
 import javafx.application.Application;
@@ -36,7 +37,8 @@ public class App extends Application {
     public  static UpdaterManager updaterManager;
     public  static BaseController baseCtrlInstance;
     public  static boolean haveUser;
-    public  static boolean darkMode = true;
+    // public  static boolean darkMode = true;
+    public  static SimpleBooleanProperty darkMode = new SimpleBooleanProperty(false);
     public  static boolean stayLoggedIn = false;
     public  static AppConfigs configs;
     public  static AppUser user;
@@ -55,9 +57,9 @@ public class App extends Application {
         primaryStage = stage;
         setDefaultAppProps();
         verifyUserProps();
+        setObservables();
         Scene mainScene = decideFirstPage();
         
-        updateAvailable.addListener((obs, oldV, newV) -> {if (newV) startUpdate = UpdaterManager.notifyUpdateAvailability();});
 
         primaryStage.setScene(mainScene);
         primaryStage.show();
@@ -81,7 +83,7 @@ public class App extends Application {
             haveUser = true;
             user = filesManager.openUserFile();
             user.getPassword().retrievePass();
-            darkMode = user.isDarkMode();
+            darkMode.set(user.isDarkMode());
             stayLoggedIn = user.isStayLoggedIn();
         }
         if (!FilesManager.isConfigured)
@@ -115,7 +117,7 @@ public class App extends Application {
                     login.getPassword().protectPassword();
                 }
             }
-            user.setDarkMode(darkMode);
+            user.setDarkMode(darkMode.get());
             user.setStayLogged(stayLoggedIn);
             filesManager.closeFiles(user, logs);
         } 
@@ -124,6 +126,10 @@ public class App extends Application {
 
 
 
+    /**
+     * <p> Decide which page to load as the first one depending on the value of {@code stayLoggedIn}.
+     * @return The Scene object of the page to load as the first one.
+     */
     private Scene decideFirstPage() {
         Scene mainScene;
         if (stayLoggedIn) {
@@ -134,6 +140,15 @@ public class App extends Application {
             setMinAppSize();
         }
         return mainScene;
+    }
+
+
+    public void setObservables() {
+        darkMode.addListener((obs, oldV, newV) -> {
+            var loadedControllers = SceneManager.getLoadedControllers();
+            for (Controller ctrl : loadedControllers.values()) ctrl.setElementsStyle(newV);
+        });
+        updateAvailable.addListener((obs, oldV, newV) -> {if (newV) startUpdate = UpdaterManager.notifyUpdateAvailability();});
     }
 
 

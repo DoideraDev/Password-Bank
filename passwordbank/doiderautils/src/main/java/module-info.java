@@ -2,7 +2,7 @@ module com.doideradev.doiderautils {
 
     requires transitive javafx.fxml;
     requires transitive javafx.graphics;
-    requires javafx.controls;
+    requires transitive javafx.controls;
     requires java.desktop;
 
     exports com.doideradev.doiderautils;

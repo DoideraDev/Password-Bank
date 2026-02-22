@@ -1,5 +1,6 @@
 package com.doideradev.passwordbank.controllers;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.utilities.UninstallerInitializer;
 import javafx.fxml.FXML;
@@ -9,7 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class SettingsScreenController {
+public class SettingsScreenController implements Controller {
 
     @FXML private Button buttonAbout;
     @FXML private Button buttonAppearence;
@@ -31,27 +32,20 @@ public class SettingsScreenController {
     public void initialize() {
         setActions();
         setTexts();
-        setTextTheme();
         setButtonsStyle();
+        setElementsStyle(App.darkMode.get());
     }
 
 
     /**
      * Set the actions for the buttons in the settings page
      */
-    private void setActions() {
+    public void setActions() {
         buttonAbout.setOnMouseClicked(event -> changeTo("about"));
-        buttonAppearence.setOnMouseClicked(event -> {
-            App.darkMode = !App.darkMode;
-            App.baseCtrlInstance.setStyle();
-            setButtonsStyle();setTextTheme();
-        });
-        buttonAppearence.setOnMouseMoved(event -> {
-            buttonAppearence.setCursor(Cursor.HAND);
-        });
+        buttonAppearence.setOnMouseClicked(event -> App.darkMode.set(!App.darkMode.get()));
+        buttonAppearence.setOnMouseMoved(event -> buttonAppearence.setCursor(Cursor.HAND));
         buttonUserInfo.setOnMouseClicked(event -> changeTo("userInfo"));
         buttonUninstall.setOnMouseClicked(event -> startUninstaller());
-        buttonUninstall.setText("Uninstall");
     }
 
 
@@ -63,8 +57,6 @@ public class SettingsScreenController {
 
 
     private void setButtonsStyle() {
-        buttonAppearence.getStyleClass().setAll("button-LightMode");
-        if (App.darkMode) {buttonAppearence.getStyleClass().setAll("button-DarkMode");}
         buttonAbout.getStyleClass().setAll("button-Next");
         buttonUserInfo.getStyleClass().setAll("button-Next");
         buttonUninstall.getStyleClass().setAll("button-Uninstall");
@@ -72,6 +64,7 @@ public class SettingsScreenController {
 
 
     public void setTexts() {
+        buttonUninstall.setText("Uninstall");
         labelAbout.setText("Informations about the program such as application guide, version, and related informations");
         labelAppearence.setText("Click the button to switch bettween Dark and Light Mode");
         labelUserInfo.setText("All the informations related to the user, as the application Username and password");
@@ -79,13 +72,20 @@ public class SettingsScreenController {
     }
 
 
-    private void setTextTheme() {
-        BaseController.setTextTheme(new Text[] {textAbout, textAppearence, textSettings, textUninstall, textUserInfo},
-                                    new Label[] {labelAbout, labelAppearence, labelUninstall, labelUserInfo});
-    }
-
 
     private void startUninstaller() {
         UninstallerInitializer.initializeUninstaller();
+    }
+
+
+    @Override
+    public void setElementsStyle(boolean darkMode) {
+        if (App.darkMode.get()) 
+            buttonAppearence.getStyleClass().setAll("button-DarkMode");
+        else buttonAppearence.getStyleClass().setAll("button-LightMode");
+
+        setTheme(darkMode, gPaneSettings);
+        setTextTheme(darkMode, new Text[] {textAbout, textAppearence, textSettings, textUninstall, textUserInfo},
+                                    new Label[] {labelAbout, labelAppearence, labelUninstall, labelUserInfo});
     }
 }

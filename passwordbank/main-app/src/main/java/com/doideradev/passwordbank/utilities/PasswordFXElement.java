@@ -355,7 +355,7 @@ public class PasswordFXElement {
      * Set the stroke color of the main rectangle according to the current theme
      */
     public static void setStokeByTheme() {
-        if (App.darkMode) 
+        if (App.darkMode.get()) 
              mainRectangle.setStroke(Color.WHITE);
         else mainRectangle.setStroke(Color.BLACK);
     }

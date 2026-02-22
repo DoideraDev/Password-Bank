@@ -1,5 +1,6 @@
 package com.doideradev.passwordbank.controllers;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.model.AppUser;
 import com.doideradev.passwordbank.utilities.QuestionsList;
@@ -14,7 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class UserInfoScreenController {
+public class UserInfoScreenController implements Controller {
 
     @FXML private Button buttonBack;
     @FXML private Button buttonDeleteAcc;
@@ -80,10 +81,9 @@ public class UserInfoScreenController {
     public void initialize() {
         setActions();
         setTexts();
-        setTextTheme();
         setButtonsStyle();
+        setElementsStyle(App.darkMode.get());
         setFields();
-        BaseController.setStyle(gPaneUserInfo);
     }
 
 
@@ -117,7 +117,7 @@ public class UserInfoScreenController {
     }
 
 
-    private void setActions() {
+    public void setActions() {
         buttonBack.setOnMouseClicked(event -> {
             App.baseCtrlInstance.prevPage();
         });
@@ -430,9 +430,12 @@ public class UserInfoScreenController {
         labelQ3.setText("Question 3");
     }
 
-    
-    protected void setTextTheme() {
-        BaseController.setTextTheme(new Text[] {textAccountInfo, textQuestions, textRecovery, textUserInfo}, 
+
+
+    @Override
+    public void setElementsStyle(boolean darkMode) {
+        setTheme(darkMode, gPaneUserInfo);
+        setTextTheme(darkMode, new Text[] {textAccountInfo, textQuestions, textRecovery, textUserInfo}, 
                                     new Label[] {labelA1, labelA2, labelA3, labelAltEmail, labelHintPass, labelHintUsername, 
                                                  labelMainEmail, labelPassword, labelPhoneNum, labelQ1, labelQ2, labelQ3});
     }

@@ -1,5 +1,6 @@
 package com.doideradev.passwordbank.controllers;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.doiderautils.SceneManager;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.utilities.FXWindowControl;
@@ -9,14 +10,12 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -24,7 +23,7 @@ import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class BaseController {
+public class BaseController implements Controller {
 
     @FXML private BorderPane bPaneMain;
     @FXML private Button buttonClose;
@@ -58,9 +57,12 @@ public class BaseController {
     public void initialize() {
         App.baseCtrlInstance = this;
         loadMainPages();
-        setStyle();
         changePage(homePane);
         setActions();
+        createMenuText();
+        setButtonsStyle();
+        setElementsStyle(App.darkMode.get());
+        editMenuButtonsSize(menuMaximized);
 
         App.getStage().setOnShowing(event -> {
             new FXWindowControl(buttonMinimize, buttonMaximize, buttonClose, appIcon);
@@ -71,7 +73,7 @@ public class BaseController {
     /**
      * Set the actions for the main buttons in the application
      */
-    private void setActions() {
+    public void setActions() {
         buttonHome.setOnMouseClicked(event -> {
             if (App.logs != null) homeCtrl.loadHomePanels();
             changePage(homePane);
@@ -97,6 +99,33 @@ public class BaseController {
     }
 
 
+    /**
+     * <p> Load the main pages (home, passwords and settings) and their controllers
+    */
+    private void loadMainPages() {
+        Parent root1 = SceneManager.loadPage(App.class, "home");
+        homeCtrl = (HomeScreenController) SceneManager.getController("home");
+        homePane = (Pane) root1;
+        
+        Parent root2 = SceneManager.loadPage(App.class, "passwords");
+        passCtrl = (PasswordScreenController) SceneManager.getController("passwords");
+        passPane = (Pane) root2;
+        
+        Parent root3 = SceneManager.loadPage(App.class, "settings");
+        settPane = (Pane) root3;
+    }
+
+
+    /**
+     * Load a FXML file page and return it as a Pane object
+     * @param pageName - Name of the FXML file to be loaded (without the .fxml extension)
+     * @return The loaded page as a Pane object
+    */
+   protected Pane loadPane(String pageName) {
+       var parent = SceneManager.loadPage(App.class, pageName);
+        return (Pane) parent;
+    }
+    
 
     /**
      * Edit the size of the menu buttons and add/remove text depending on the menu state
@@ -144,54 +173,12 @@ public class BaseController {
     }
 
     /**
-     * Set the style for the buttons in the application
-     */
-    private void setButtonsStyle(){
-        buttonClose.getStyleClass().setAll("button-close");
-        buttonMaximize.getStyleClass().setAll("button-maximize");
-        buttonMinimize.getStyleClass().setAll("button-minimize");
-        buttonHome.getStyleClass().setAll("button-home");
-        buttonMenu.getStyleClass().setAll("button-menu");
-        buttonPassword.getStyleClass().setAll("button-password");
-        buttonSettings.getStyleClass().setAll("button-settings");
-    }
-
-
-    /**
-     * <p> Load the main pages (home, passwords and settings) and their controllers
-     */
-    private void loadMainPages() {
-        Parent root1 = SceneManager.loadPage(App.class, "home");
-        homeCtrl = (HomeScreenController) SceneManager.getController("home");
-        homePane = (Pane) root1;
-
-        Parent root2 = SceneManager.loadPage(App.class, "passwords");
-        passCtrl = (PasswordScreenController) SceneManager.getController("passwords");
-        passPane = (Pane) root2;
-        
-        Parent root3 = SceneManager.loadPage(App.class, "settings");
-        settPane = (Pane) root3;
-    }
-
-    /**
-     * Load a FXML file page and return it as a Pane object
-     * @param pageName - Name of the FXML file to be loaded (without the .fxml extension)
-     * @return The loaded page as a Pane object
-     */
-    protected Pane loadPane(String pageName) {
-        var parent = SceneManager.loadPage(App.class, pageName);
-        return (Pane) parent;
-    }
-
-
-    /**
      * Change the current page to the selected one
      * @param nextPane - Pane to be shown
      */
     private void changePage(Pane nextPane) {
         stackPaneMain.getChildren().clear();
         stackPaneMain.getChildren().add(nextPane);
-        setStyle();
     }
 
     /**
@@ -210,13 +197,26 @@ public class BaseController {
     }
 
     /**
+     * Set the style for the buttons in the application
+     */
+    private void setButtonsStyle(){
+        buttonClose.getStyleClass().setAll("button-close");
+        buttonMaximize.getStyleClass().setAll("button-maximize");
+        buttonMinimize.getStyleClass().setAll("button-minimize");
+        buttonHome.getStyleClass().setAll("button-home");
+        buttonMenu.getStyleClass().setAll("button-menu");
+        buttonPassword.getStyleClass().setAll("button-password");
+        buttonSettings.getStyleClass().setAll("button-settings");
+    }
+
+    /**
      * Set the style of the main elements of the screen depending on the active theme
      */
-    protected void setStyle() {
+    public void setElementsStyle(boolean darkMode) {
         bPaneMain.setBackground(Background.fill(Color.TRANSPARENT));
         gPaneTitleBar.setStyle("-fx-background-color: #292929aa; -fx-background-radius: 8 8 0 0; -fx-border-radius: 8 8 0 0;");
         gPaneTop.setStyle("-fx-background-color: #804DE5; -fx-background-radius: 8 8 0 0; -fx-border-radius: 8 8 0 0;");
-        if (App.darkMode) {
+        if (darkMode) {
             sPaneMain.setStyle(sPaneMain.getStyle() + "-fx-background-color: #292929;");
             gPaneMenu.setStyle("-fx-background-color: #3B3B3B;" +
             "-fx-background-radius: 0 0 0 8;" + 
@@ -228,39 +228,12 @@ public class BaseController {
                                 "-fx-background-radius: 0 0 0 8;" + 
                                 "-fx-border-radius: 0 0 0 8;");
         }
-
-        homeCtrl.setTextTheme();
-        passCtrl.setTextTheme();
-        setButtonsStyle();
-        createMenuText();
-        editMenuButtonsSize(menuMaximized);
-        setStyle(stackPaneMain, passPane, settPane);
+        setTheme(darkMode, stackPaneMain);
+        
+        Text[] texts = {menuText, homeText, passText, settText};
+        setTextTheme(darkMode, texts);
     }
 
-    /**
-     * Set background color depending on the active theme
-     * @param panes - Element to be styled
-     */
-    public static void setStyle(Region... panes) {
-        if (App.darkMode) 
-             {for (Region pane : panes) {pane.setBackground(Background.fill(Color.valueOf("#292929")));}} 
-        else {for (Region pane : panes) {pane.setBackground(Background.fill(Color.WHITE));}}
-    }
-
-    /**
-     * Set text color depending on the active theme
-     * @param texts - array of Text elements
-     * @param labels - array of Label elements
-     */
-    public static void setTextTheme(Text[] texts, Label... labels) {
-        if (App.darkMode) {
-            for (Label label : labels)  {label.setTextFill(Color.WHITE);}
-            for (Text text : texts)     {text.setFill(Color.WHITE);}
-        } else {
-            for (Label label : labels)  {label.setTextFill(Color.BLACK);}
-            for (Text text : texts)     {text.setFill(Color.BLACK);}
-        }
-    }
 
     /**
      * Node to be used as a reference for popups and error messages

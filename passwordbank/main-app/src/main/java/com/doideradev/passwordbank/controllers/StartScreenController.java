@@ -1,7 +1,6 @@
 package com.doideradev.passwordbank.controllers;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +11,8 @@ import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.model.AppUser;
 import com.doideradev.passwordbank.model.Password;
 import com.doideradev.passwordbank.utilities.QuestionsList;
-
+import com.doideradev.doiderautils.Controller;
+import com.doideradev.doiderautils.SceneManager;
 import com.doideradev.doiderautils.popup.PopupError;
 
 import java.awt.Desktop;
@@ -25,9 +25,7 @@ import animatefx.animation.SlideInRight;
 import animatefx.animation.SlideInUp;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -42,7 +40,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
-public class StartScreenController {
+public class StartScreenController implements Controller {
 
     /*
      * Start screen components
@@ -167,333 +165,314 @@ public class StartScreenController {
             if (!App.haveUser) loadNextPages();
             else {user = App.user; loadForgotPasswordScene();}
         });
-        startPageActions();
+        setActions();
     }
 
     
+    
 
-    private void startPageActions() {
-        buttonLogReg.getStyleClass().setAll("button-LogReg");
-        bViewPass.getStyleClass().setAll("button-HidePass");
 
-        bViewPass.setOnMousePressed(event -> {
-            bViewPass.requestFocus();
-            String pass = pFPassword.getText();
-            tFPassword.setText(pass);
-            pFPassword.setVisible(false);
-            tFPassword.setVisible(true);
-            bViewPass.getStyleClass().setAll("button-ViewPass");
-        });
-        bViewPass.setOnMouseReleased(event -> {
-            bViewPass.focusedProperty().not();
-            String pass = tFPassword.getText();
-            pFPassword.setText(pass);
-            tFPassword.setVisible(false);
-            pFPassword.setVisible(true);
+    @Override
+    public void setActions() {
+        {// Start page actions
+            buttonLogReg.getStyleClass().setAll("button-LogReg");
             bViewPass.getStyleClass().setAll("button-HidePass");
-        });
-        buttonClose.setOnMouseClicked(event -> Platform.exit());
-        buttonClose.setOnMouseMoved(event -> buttonClose.setCursor(Cursor.HAND));
-         
-        if (App.haveUser) {
-            tWelcome.setText("Enter your login information");
-            textUserGuide.setVisible(false);
-            buttonLogReg.setText("Login");
-            buttonLogReg.setOnMouseClicked(event -> {if (verifyStartFields()) goToApp();});
-            buttonLogReg.setOnKeyPressed(event -> {
-                if (event.getCode().equals(KeyCode.ENTER) && verifyStartFields()) 
-                    {goToApp();}
+    
+            bViewPass.setOnMousePressed(event -> {
+                bViewPass.requestFocus();
+                String pass = pFPassword.getText();
+                tFPassword.setText(pass);
+                pFPassword.setVisible(false);
+                tFPassword.setVisible(true);
+                bViewPass.getStyleClass().setAll("button-ViewPass");
             });
-        } else {
-            tWelcome.setLayoutY(280);
-            tWelcome.setText("Create an account to start using the application!");
-            vBoxUserInfo.setVisible(false);
-            textUserGuide.setVisible(true);
-            buttonLogReg.setLayoutY(400);
-            buttonLogReg.setText("Create account");
-            buttonLogReg.setOnMouseClicked(event -> goToPage1());
-            buttonLogReg.setOnKeyPressed(event -> {if (event.getCode().equals(KeyCode.ENTER)) goToPage1();});
-        }
-        tFUsername.setOnKeyTyped(event -> {
-            tFUsername.setStyle(null);
-            lHintUsernameStart.setVisible(false);
-        });
-        pFPassword.setOnKeyTyped(event -> {
-            pFPassword.setStyle(null);
-            tFPassword.setStyle(null);
-            lHintPasswordStart.setVisible(false);
-        });
-        cBoxStayLogged.setOnMouseClicked(event -> {
-            if (cBoxStayLogged.isSelected()) {
-                App.stayLoggedIn = true;
-            } else App.stayLoggedIn = false;
-        });
-        cBoxStayLogged.setOnKeyReleased(event -> {
-            if (event.getCode().equals(KeyCode.ENTER) ||
-                event.getCode().equals(KeyCode.SPACE) ) {
+            bViewPass.setOnMouseReleased(event -> {
+                bViewPass.focusedProperty().not();
+                String pass = tFPassword.getText();
+                pFPassword.setText(pass);
+                tFPassword.setVisible(false);
+                pFPassword.setVisible(true);
+                bViewPass.getStyleClass().setAll("button-HidePass");
+            });
+            buttonClose.setOnMouseClicked(event -> Platform.exit());
+            buttonClose.setOnMouseMoved(event -> buttonClose.setCursor(Cursor.HAND));
+             
+            {// Set start page layout and actions based on the user existence
+                if (App.haveUser) {
+                tWelcome.setText("Enter your login information");
+                textUserGuide.setVisible(false);
+                buttonLogReg.setText("Login");
+                buttonLogReg.setOnMouseClicked(event -> {if (verifyStartFields()) goToApp();});
+                buttonLogReg.setOnKeyPressed(event -> {
+                    if (event.getCode().equals(KeyCode.ENTER) && verifyStartFields()) 
+                        {goToApp();}
+                });
+                } else {
+                    tWelcome.setLayoutY(280);
+                    tWelcome.setText("Create an account to start using the application!");
+                    vBoxUserInfo.setVisible(false);
+                    textUserGuide.setVisible(true);
+                    buttonLogReg.setLayoutY(400);
+                    buttonLogReg.setText("Create account");
+                    buttonLogReg.setOnMouseClicked(event -> goToPage1());
+                    buttonLogReg.setOnKeyPressed(event -> {if (event.getCode().equals(KeyCode.ENTER)) goToPage1();});
+                }
+            }
+    
+            tFUsername.setOnKeyTyped(event -> {
+                tFUsername.setStyle(null);
+                lHintUsernameStart.setVisible(false);
+            });
+            pFPassword.setOnKeyTyped(event -> {
+                pFPassword.setStyle(null);
+                tFPassword.setStyle(null);
+                lHintPasswordStart.setVisible(false);
+            });
+            cBoxStayLogged.setOnMouseClicked(event -> {
                 if (cBoxStayLogged.isSelected()) {
                     App.stayLoggedIn = true;
                 } else App.stayLoggedIn = false;
-            }
-        });
-        tForgotPass.setOnMousePressed(event -> tForgotPass.requestFocus());
-        tForgotPass.focusedProperty().addListener((a, b, c) -> {
-            if (c) tForgotPass.setFill(Color.BLUE);
-            else tForgotPass.setFill(Color.WHITE);
-        });
-        tForgotPass.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)) {
+            });
+            cBoxStayLogged.setOnKeyReleased(event -> {
+                if (event.getCode().equals(KeyCode.ENTER) ||
+                    event.getCode().equals(KeyCode.SPACE) ) {
+                    if (cBoxStayLogged.isSelected()) {
+                        App.stayLoggedIn = true;
+                    } else App.stayLoggedIn = false;
+                }
+            });
+            tForgotPass.setOnMousePressed(event -> tForgotPass.requestFocus());
+            tForgotPass.focusedProperty().addListener((a, b, c) -> {
+                if (c) tForgotPass.setFill(Color.BLUE);
+                else tForgotPass.setFill(Color.WHITE);
+            });
+            tForgotPass.setOnKeyPressed(event -> {
+                if (event.getCode().equals(KeyCode.ENTER)) {
+                    changePage(true, forgotPage);
+                }
+            });
+            tForgotPass.setOnMouseClicked(event -> {
                 changePage(true, forgotPage);
-            }
-        });
-        tForgotPass.setOnMouseClicked(event -> {
-            changePage(true, forgotPage);
-        });
-        textUserGuide.setText("User guide");
-        textUserGuide.setOnMouseClicked(event -> openUserGuide());
-        textUserGuide.setOnMousePressed(event -> textUserGuide.requestFocus());
-        textUserGuide.setOnMouseReleased(event -> tWelcome.requestFocus());
-        textUserGuide.focusedProperty().addListener((a, b, c) -> {
-            if (c) textUserGuide.setFill(Color.BLUE);
-            else textUserGuide.setFill(Color.WHITE);
-        });
+            });
+            textUserGuide.setText("User guide");
+            textUserGuide.setOnMouseClicked(event -> openUserGuide());
+            textUserGuide.setOnMousePressed(event -> textUserGuide.requestFocus());
+            textUserGuide.setOnMouseReleased(event -> tWelcome.requestFocus());
+            textUserGuide.focusedProperty().addListener((a, b, c) -> {
+                if (c) textUserGuide.setFill(Color.BLUE);
+                else textUserGuide.setFill(Color.WHITE);
+            });
+    
+            lHintPasswordStart.setVisible(false);
+            lHintUsernameStart.setVisible(false);
+        }
 
-        lHintPasswordStart.setVisible(false);
-        lHintUsernameStart.setVisible(false);
-    }
+        {// Register page 1 actions
+            bViewPassReg.getStyleClass().setAll("button-HidePass");
+            bViewPassRepReg.getStyleClass().setAll("button-HidePass");
+            buttonBackStartPage.getStyleClass().setAll("button-LeftArrow");
+            buttonNextPageReg.getStyleClass().setAll("button-RightArrow");
+            
+            bViewPassReg.setOnMousePressed(event -> {
+                bViewPassReg.getStyleClass().setAll("button-ViewPass");
+                bViewPassReg.requestFocus();
+                tFPasswordReg.setText(pFPasswordReg.getText());
+                pFPasswordReg.setVisible(false);
+                tFPasswordReg.setVisible(true);
+            });
+            bViewPassReg.setOnMouseReleased(event -> {
+                bViewPassReg.getStyleClass().setAll("button-HidePass");
+                bViewPassReg.focusedProperty().not();
+                tFPasswordReg.clear();
+                tFPasswordReg.setVisible(false);
+                pFPasswordReg.setVisible(true);
+            });
+            bViewPassRepReg.setOnMousePressed(event -> {
+                bViewPassRepReg.getStyleClass().setAll("button-ViewPass");
+                bViewPassRepReg.requestFocus();
+                tFPasswordRepReg.setText(pFPasswordRepReg.getText());
+                pFPasswordRepReg.setVisible(false);
+                tFPasswordRepReg.setVisible(true);
+            });
+            bViewPassRepReg.setOnMouseReleased(event -> {
+                bViewPassRepReg.getStyleClass().setAll("button-HidePass");
+                bViewPassRepReg.focusedProperty().not();
+                tFPasswordRepReg.clear();
+                tFPasswordRepReg.setVisible(false);
+                pFPasswordRepReg.setVisible(true);
+            });
+            buttonBackStartPage.setOnMouseClicked(event -> {
+                App.getStage().setWidth(pLogin.getWidth());
+                changePage(pLogin, false);
+            });
+            buttonNextPageReg.setOnMouseClicked(event -> goToPage2());
+            buttonNextPageReg.setOnKeyPressed(event -> {if (event.getCode().equals(KeyCode.ENTER)) goToPage2();});
+            tFEmailReg.setOnKeyTyped(event -> {
+                tFEmailReg.setStyle(null);
+                lHintEmailReg.setStyle(null);
+                lHintEmailReg.setVisible(false);
+            });
+            pFPasswordReg.setOnKeyTyped(event -> {
+                pFPasswordReg.setStyle(null);
+                lHintPassReg.setStyle(null);
+                lHintPassReg.setVisible(false);
+            });
+            pFPasswordRepReg.setOnKeyTyped(event -> {
+                pFPasswordRepReg.setStyle(null);
+                lHintPassRepReg.setStyle(null);
+                lHintPassRepReg.setVisible(false);
+                if (pFPasswordRepReg.getText().equals(pFPasswordReg.getText()) &&
+                    !pFPasswordReg.getText().isBlank()) {
+                    lHintPassRepReg.setText("the password matches");
+                    lHintPassRepReg.setStyle(labelStyleGood);
+                    lHintPassRepReg.setVisible(true);
+                }
+            });
+            lHintEmailReg.setVisible(false);
+            lHintPassReg.setVisible(false);
+            lHintPassRepReg.setVisible(false);
+            textRegInfo.setText("Please enter the following informations to register");
+        }
 
+        {// Register page 2 actions
+            buttonBackPageReg.getStyleClass().setAll("button-LeftArrow");
+            buttonNextPageRecovery.getStyleClass().setAll("button-RightArrow");
 
-    private void openUserGuide() {
-        try (InputStream input = App.class.getResourceAsStream("User guide.pdf")) { 
-            Path tempFile = Files.createTempFile("User guide", ".pdf");
-            Path newPath = Paths.get(tempFile.getParent() + "/User guide.pdf");
+            buttonBackPageReg.setOnMouseClicked(event -> {
+                changePage(panePage1, false);
+            });
+            buttonNextPageRecovery.setOnMouseClicked(event -> goToPage3());
+            buttonNextPageRecovery.setOnKeyPressed(event -> {if (event.getCode().equals(KeyCode.ENTER)) goToPage3();});
+            tFUsernameReg.setOnKeyTyped(event -> {
+                tFUsernameReg.setStyle(null);
+                lHintUsernameReg.setStyle(null);
+                lHintUsernameReg.setVisible(false);
+            });
+            cBoxUsername.setOnMouseClicked(event -> checkBoxSelect1());
+            cBoxUsername.setOnKeyReleased(event -> {
+                if (event.getCode().equals(KeyCode.ENTER) || 
+                    event.getCode().equals(KeyCode.SPACE)) {
+                    checkBoxSelect1();
+                }
+            });
+            labelUsernameReg.requestFocus();
+            lHintUsernameReg.setVisible(false);
+            textRegInfo2.setText("You can set an Username to use while logging instead of your email");
+        }
 
-            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
-            Path path = Files.move(tempFile, newPath, StandardCopyOption.REPLACE_EXISTING);
-            File userGuide = new File(path.toUri());
+        {// Recovery information page actions
+            buttonSkipRecovery.getStyleClass().setAll("button-Skip");
+            buttonNextPageRecovery2.getStyleClass().setAll("button-RightArrow");
 
-            Desktop desktop = Desktop.getDesktop();
-            if (Desktop.isDesktopSupported()) {
-                desktop.open(userGuide);
-                userGuide.deleteOnExit();
-            }
+            buttonSkipRecovery.setOnMouseClicked(event -> {createAccount();            goToApp();});
+            buttonSkipRecovery.setOnKeyPressed(event -> {
+                if(event.getCode().equals(KeyCode.ENTER)) {createAccount();            goToApp();}});
+            buttonNextPageRecovery2.setOnMouseClicked(event -> goToPage4());
+            buttonNextPageRecovery2.setOnKeyPressed(event -> {
+                if (event.getCode().equals(KeyCode.ENTER)) goToPage4();});
+            textRegRec1.setText("Please, fill the following fields to help secure your account. \nDon't worry, you can do it latter");
+        }
 
-        } catch (Exception e) {
-            new PopupError("Failed to open user guide - " + e.getMessage(), textUserGuide);
+        {// Recovery page 1 actions
+            buttonNextPageRecovery3.getStyleClass().setAll("button-RightArrow");
+
+            buttonNextPageRecovery3.setOnMouseClicked(event -> goToPage5());
+            buttonNextPageRecovery3.setOnKeyPressed(event -> {
+                if (event.getCode().equals(KeyCode.ENTER)) goToPage5();});
+            tFAltEmailRec.setOnKeyTyped(event -> {
+                tFAltEmailRec.setStyle(null);
+                lHintAltEmailRec.setStyle(null);
+                lHintAltEmailRec.setVisible(false);
+            });
+            tFMainEmailRec.setOnKeyTyped(event -> {
+                tFMainEmailRec.setStyle(null);
+                lHintMainEmailRec.setStyle(null);
+                lHintMainEmailRec.setVisible(false);
+            });
+            tFPhoneNum.setOnKeyTyped(event -> {
+                tFPhoneNum.setStyle(null);
+                lHintPhoneNum.setStyle(null);
+                lHintPhoneNum.setVisible(false);
+            });
+            cBoxAltEmail.setOnMouseClicked(event -> checkBoxSelect2());
+            cBoxAltEmail.setOnKeyReleased(event -> {
+                if (event.getCode().equals(KeyCode.ENTER) || 
+                    event.getCode().equals(KeyCode.SPACE)) {
+                    checkBoxSelect2();
+                }
+            });
+            tFPhoneNum.setOnKeyTyped(event -> {
+                if (tFPhoneNum.getText().isEmpty()) lHintPhoneNum.setVisible(true);
+                else lHintPhoneNum.setVisible(false);
+            });
+            lMainEmailRec.requestFocus();
+            tFMainEmailRec.setText(mainEmail);
+            lHintAltEmailRec.setVisible(false);
+            lHintMainEmailRec.setVisible(false);
+            lHintPhoneNum.setVisible(true);
+            textRegRec2.setText("Fill theses fields carefully, this will be needed to recovery your account");
+        }
+
+        {// Recovery page 2 actions
+            buttonBackPageRec3.getStyleClass().setAll("button-LeftArrow");
+            buttonFinish.getStyleClass().setAll("button-Finish");
+
+            buttonBackPageRec3.setOnMouseClicked(event -> {
+                App.getStage().setHeight(600);
+                changePage(panePage4, false);
+            });
+            buttonFinish.setOnMouseClicked(event -> {if (verifyQuestionFields()) finishRegistration();});
+            buttonFinish.setOnKeyTyped(event ->     {if (verifyQuestionFields()) finishRegistration();});
+            tAAnswer1.setOnMouseClicked(event -> {
+                tAAnswer1.setStyle(null);
+                tAAnswer1.clear();
+                lHintQuestions.setVisible(false);
+            });
+            tAAnswer2.setOnMouseClicked(event -> {
+                tAAnswer2.setStyle(null);
+                tAAnswer2.clear();
+                lHintQuestions.setVisible(false);
+            });
+            tAAnswer3.setOnMouseClicked(event -> {
+                tAAnswer3.setStyle(null);
+                tAAnswer3.clear();
+                lHintQuestions.setVisible(false);
+            });
+            cBoxQuestion1.valueProperty().addListener(listener -> {
+                if (!cBoxQuestion1.getSelectionModel().getSelectedItem().equals(defQuestString)) {
+                    cBoxQuestion1.setStyle(null);
+                    lHintQuestions.setVisible(false);
+                }
+            });
+            cBoxQuestion2.valueProperty().addListener(listener -> {
+                if (!cBoxQuestion2.getSelectionModel().getSelectedItem().equals(defQuestString)) {
+                    cBoxQuestion2.setStyle(null);
+                    lHintQuestions.setVisible(false);
+                }
+            });
+            cBoxQuestion3.valueProperty().addListener(listener -> {
+                if (!cBoxQuestion3.getSelectionModel().getSelectedItem().equals(defQuestString)) {
+                    cBoxQuestion3.setStyle(null);
+                    lHintQuestions.setVisible(false);
+                }
+            });
+
+            cBoxQuestion1.setItems(qList.getList());
+            cBoxQuestion1.setValue(defQuestString);
+            cBoxQuestion2.setItems(qList.getList());
+            cBoxQuestion2.setValue(defQuestString);
+            cBoxQuestion3.setItems(qList.getList());
+            cBoxQuestion3.setValue(defQuestString);
+            lHintQuestions.setVisible(false);
+            textRegRec3.setText("Select a question and give an answer to each one, you will need this when recovering your account");
+
         }
     }
-
-
-    private void registerPage1Actions() {
-        bViewPassReg.getStyleClass().setAll("button-HidePass");
-        bViewPassRepReg.getStyleClass().setAll("button-HidePass");
-        
-        bViewPassReg.setOnMousePressed(event -> {
-            bViewPassReg.getStyleClass().setAll("button-ViewPass");
-            bViewPassReg.requestFocus();
-            tFPasswordReg.setText(pFPasswordReg.getText());
-            pFPasswordReg.setVisible(false);
-            tFPasswordReg.setVisible(true);
-        });
-        bViewPassReg.setOnMouseReleased(event -> {
-            bViewPassReg.getStyleClass().setAll("button-HidePass");
-            bViewPassReg.focusedProperty().not();
-            tFPasswordReg.clear();
-            tFPasswordReg.setVisible(false);
-            pFPasswordReg.setVisible(true);
-        });
-        bViewPassRepReg.setOnMousePressed(event -> {
-            bViewPassRepReg.getStyleClass().setAll("button-ViewPass");
-            bViewPassRepReg.requestFocus();
-            tFPasswordRepReg.setText(pFPasswordRepReg.getText());
-            pFPasswordRepReg.setVisible(false);
-            tFPasswordRepReg.setVisible(true);
-        });
-        bViewPassRepReg.setOnMouseReleased(event -> {
-            bViewPassRepReg.getStyleClass().setAll("button-HidePass");
-            bViewPassRepReg.focusedProperty().not();
-            tFPasswordRepReg.clear();
-            tFPasswordRepReg.setVisible(false);
-            pFPasswordRepReg.setVisible(true);
-        });
-        buttonBackStartPage.getStyleClass().setAll("button-LeftArrow");
-        buttonBackStartPage.setOnMouseClicked(event -> {
-            App.getStage().setWidth(pLogin.getWidth());
-            changePage(pLogin, false);
-            startPageActions();
-        });
-        buttonNextPageReg.getStyleClass().setAll("button-RightArrow");
-        buttonNextPageReg.setOnMouseClicked(event -> goToPage2());
-        buttonNextPageReg.setOnKeyPressed(event -> {if (event.getCode().equals(KeyCode.ENTER)) goToPage2();});
-        tFEmailReg.setOnKeyTyped(event -> {
-            tFEmailReg.setStyle(null);
-            lHintEmailReg.setStyle(null);
-            lHintEmailReg.setVisible(false);
-        });
-        pFPasswordReg.setOnKeyTyped(event -> {
-            pFPasswordReg.setStyle(null);
-            lHintPassReg.setStyle(null);
-            lHintPassReg.setVisible(false);
-        });
-        pFPasswordRepReg.setOnKeyTyped(event -> {
-            pFPasswordRepReg.setStyle(null);
-            lHintPassRepReg.setStyle(null);
-            lHintPassRepReg.setVisible(false);
-            if (pFPasswordRepReg.getText().equals(pFPasswordReg.getText()) &&
-                !pFPasswordReg.getText().isBlank()) {
-                lHintPassRepReg.setText("the password matches");
-                lHintPassRepReg.setStyle(labelStyleGood);
-                lHintPassRepReg.setVisible(true);
-            }
-        });
-        lHintEmailReg.setVisible(false);
-        lHintPassReg.setVisible(false);
-        lHintPassRepReg.setVisible(false);
-        textRegInfo.setText("Please enter the following informations to register");
-    }
-
-
-    private void registerPage2Actions() {
-        buttonBackPageReg.getStyleClass().setAll("button-LeftArrow");
-        buttonNextPageRecovery.getStyleClass().setAll("button-RightArrow");
-
-        buttonBackPageReg.setOnMouseClicked(event -> {
-            changePage(panePage1, false);
-        });
-        buttonNextPageRecovery.setOnMouseClicked(event -> goToPage3());
-        buttonNextPageRecovery.setOnKeyPressed(event -> {if (event.getCode().equals(KeyCode.ENTER)) goToPage3();});
-        tFUsernameReg.setOnKeyTyped(event -> {
-            tFUsernameReg.setStyle(null);
-            lHintUsernameReg.setStyle(null);
-            lHintUsernameReg.setVisible(false);
-        });
-        cBoxUsername.setOnMouseClicked(event -> checkBoxSelect1());
-        cBoxUsername.setOnKeyReleased(event -> {
-            if (event.getCode().equals(KeyCode.ENTER) || 
-                event.getCode().equals(KeyCode.SPACE)) {
-                checkBoxSelect1();
-            }
-        });
-        labelUsernameReg.requestFocus();
-        lHintUsernameReg.setVisible(false);
-        textRegInfo2.setText("You can set an Username to use while logging instead of your email");
-    }
-
-
-    private void recoveryInfoPageActions() {
-        buttonSkipRecovery.getStyleClass().setAll("button-Skip");
-        buttonNextPageRecovery2.getStyleClass().setAll("button-RightArrow");
-
-        buttonSkipRecovery.setOnMouseClicked(event -> {createAccount();            goToApp();});
-        buttonSkipRecovery.setOnKeyPressed(event -> {
-            if(event.getCode().equals(KeyCode.ENTER)) {createAccount();            goToApp();}});
-        buttonNextPageRecovery2.setOnMouseClicked(event -> goToPage4());
-        buttonNextPageRecovery2.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)) goToPage4();});
-        textRegRec1.setText("Please, fill the following fields to help secure your account. \nDon't worry, you can do it latter");
-    }
-
-
-    private void recoveryPage1Actions() {
-        buttonNextPageRecovery3.getStyleClass().setAll("button-RightArrow");
-
-        buttonNextPageRecovery3.setOnMouseClicked(event -> goToPage5());
-        buttonNextPageRecovery3.setOnKeyPressed(event -> {
-            if (event.getCode().equals(KeyCode.ENTER)) goToPage5();});
-        tFAltEmailRec.setOnKeyTyped(event -> {
-            tFAltEmailRec.setStyle(null);
-            lHintAltEmailRec.setStyle(null);
-            lHintAltEmailRec.setVisible(false);
-        });
-        tFMainEmailRec.setOnKeyTyped(event -> {
-            tFMainEmailRec.setStyle(null);
-            lHintMainEmailRec.setStyle(null);
-            lHintMainEmailRec.setVisible(false);
-        });
-        tFPhoneNum.setOnKeyTyped(event -> {
-            tFPhoneNum.setStyle(null);
-            lHintPhoneNum.setStyle(null);
-            lHintPhoneNum.setVisible(false);
-        });
-        cBoxAltEmail.setOnMouseClicked(event -> checkBoxSelect2());
-        cBoxAltEmail.setOnKeyReleased(event -> {
-            if (event.getCode().equals(KeyCode.ENTER) || 
-                event.getCode().equals(KeyCode.SPACE)) {
-                checkBoxSelect2();
-            }
-        });
-        tFPhoneNum.setOnKeyTyped(event -> {
-            if (tFPhoneNum.getText().isEmpty()) lHintPhoneNum.setVisible(true);
-            else lHintPhoneNum.setVisible(false);
-        });
-        lMainEmailRec.requestFocus();
-        tFMainEmailRec.setText(mainEmail);
-        lHintAltEmailRec.setVisible(false);
-        lHintMainEmailRec.setVisible(false);
-        lHintPhoneNum.setVisible(true);
-        textRegRec2.setText("Fill theses fields carefully, this will be needed to recovery your account");
-    }
-
-
-    private void recoveryPage2Actions() {
-        buttonBackPageRec3.getStyleClass().setAll("button-LeftArrow");
-        buttonFinish.getStyleClass().setAll("button-Finish");
-
-        buttonBackPageRec3.setOnMouseClicked(event -> {
-            App.getStage().setHeight(600);
-            changePage(panePage4, false);
-        });
-        buttonFinish.setOnMouseClicked(event -> {if (verifyQuestionFields()) finishRegistration();});
-        buttonFinish.setOnKeyTyped(event ->     {if (verifyQuestionFields()) finishRegistration();});
-        tAAnswer1.setOnMouseClicked(event -> {
-            tAAnswer1.setStyle(null);
-            tAAnswer1.clear();
-            lHintQuestions.setVisible(false);
-        });
-        tAAnswer2.setOnMouseClicked(event -> {
-            tAAnswer2.setStyle(null);
-            tAAnswer2.clear();
-            lHintQuestions.setVisible(false);
-        });
-        tAAnswer3.setOnMouseClicked(event -> {
-            tAAnswer3.setStyle(null);
-            tAAnswer3.clear();
-            lHintQuestions.setVisible(false);
-        });
-        cBoxQuestion1.valueProperty().addListener(listener -> {
-            if (!cBoxQuestion1.getSelectionModel().getSelectedItem().equals(defQuestString)) {
-                cBoxQuestion1.setStyle(null);
-                lHintQuestions.setVisible(false);
-            }
-        });
-        cBoxQuestion2.valueProperty().addListener(listener -> {
-            if (!cBoxQuestion2.getSelectionModel().getSelectedItem().equals(defQuestString)) {
-                cBoxQuestion2.setStyle(null);
-                lHintQuestions.setVisible(false);
-            }
-        });
-        cBoxQuestion3.valueProperty().addListener(listener -> {
-            if (!cBoxQuestion3.getSelectionModel().getSelectedItem().equals(defQuestString)) {
-                cBoxQuestion3.setStyle(null);
-                lHintQuestions.setVisible(false);
-            }
-        });
-
-        cBoxQuestion1.setItems(qList.getList());
-        cBoxQuestion1.setValue(defQuestString);
-        cBoxQuestion2.setItems(qList.getList());
-        cBoxQuestion2.setValue(defQuestString);
-        cBoxQuestion3.setItems(qList.getList());
-        cBoxQuestion3.setValue(defQuestString);
-        lHintQuestions.setVisible(false);
-        textRegRec3.setText("Select a question and give an answer to each one, you will need this when recovering your account");
-    }
-
+    
 
     private void goToPage1() {
         App.getStage().setWidth(500);
         changePage(panePage1, true);
-        registerPage1Actions();
         textRegInfo.requestFocus();
     }
 
@@ -502,7 +481,6 @@ public class StartScreenController {
             mainEmail = tFEmailReg.getText();
             password  = pFPasswordReg.getText();
             changePage(panePage2, true);
-            registerPage2Actions();
         }
     }
 
@@ -513,13 +491,11 @@ public class StartScreenController {
         } else {
             username = tFUsernameReg.getText();
             changePage(panePage3, true);
-            recoveryInfoPageActions();
         }
     }
 
     private void goToPage4() {
         changePage(panePage4, true);
-        recoveryPage1Actions();
     }
 
     private void goToPage5() {
@@ -531,7 +507,6 @@ public class StartScreenController {
             if (!tFPhoneNum.getText().isBlank()) {phoneNum = tFPhoneNum.getText();}
             App.getStage().setHeight(720);
             changePage(panePage5, true);
-            recoveryPage2Actions();
         }
     }
 
@@ -756,6 +731,28 @@ public class StartScreenController {
     }
 
 
+
+    private void openUserGuide() {
+        try (InputStream input = App.class.getResourceAsStream("User guide.pdf")) { 
+            Path tempFile = Files.createTempFile("User guide", ".pdf");
+            Path newPath = Paths.get(tempFile.getParent() + "/User guide.pdf");
+
+            Files.copy(input, tempFile, StandardCopyOption.REPLACE_EXISTING);
+            Path path = Files.move(tempFile, newPath, StandardCopyOption.REPLACE_EXISTING);
+            File userGuide = new File(path.toUri());
+
+            Desktop desktop = Desktop.getDesktop();
+            if (Desktop.isDesktopSupported()) {
+                desktop.open(userGuide);
+                userGuide.deleteOnExit();
+            }
+
+        } catch (Exception e) {
+            new PopupError("Failed to open user guide - " + e.getMessage(), textUserGuide);
+        }
+    }
+
+
     /**
      * <p> Method used to animate transition betweeen pages
      * , this method is solely to be used inside the class.
@@ -827,51 +824,39 @@ public class StartScreenController {
 
 
     private void loadNextPages() {
-        try {
-            FXMLLoader loader1 = new FXMLLoader(App.class.getResource("views/register1.fxml"));
-            loader1.setController(this);
-            Parent root1 = loader1.load();
-            panePage1 = (Pane) root1;
+        SceneManager.setController("register1", this);
+        var root1 = SceneManager.loadPage(App.class, "register1");
+        panePage1 = (Pane) root1;
 
-            FXMLLoader loader2 = new FXMLLoader(App.class.getResource("views/register2.fxml"));
-            loader2.setController(this);
-            Parent root2 = loader2.load();
-            panePage2 = (Pane) root2;
+        SceneManager.setController("register2", this);
+        var root2 = SceneManager.loadPage(App.class, "register2");
+        panePage2 = (Pane) root2;
 
-            FXMLLoader loader3 = new FXMLLoader(App.class.getResource("views/recoveryInfoPres.fxml"));
-            loader3.setController(this);
-            Parent root3 = loader3.load();
-            panePage3 = (Pane) root3;
+        SceneManager.setController("recoveryInfoPres", this);
+        var root3 = SceneManager.loadPage(App.class, "recoveryInfoPres");
+        panePage3 = (Pane) root3;
 
-            FXMLLoader loader4 = new FXMLLoader(App.class.getResource("views/recoveryInfo1.fxml"));
-            loader4.setController(this);
-            Parent root4 = loader4.load();
-            panePage4 = (Pane) root4;
-            
-            FXMLLoader loader5 = new FXMLLoader(App.class.getResource("views/recoveryInfo2.fxml"));
-            loader5.setController(this);
-            Parent root5 = loader5.load();
-            panePage5 = (Pane) root5;
-
-        } catch (IOException e) {
-            System.out.println("Error: An error happened trying to load next pages");
-            System.out.println(e.getMessage());                    e.printStackTrace();
-        }
+        SceneManager.setController("recoveryInfo1", this);
+        var root4 = SceneManager.loadPage(App.class, "recoveryInfo1");
+        panePage4 = (Pane) root4;
+        
+        SceneManager.setController("recoveryInfo2", this);
+        var root5 = SceneManager.loadPage(App.class, "recoveryInfo2");
+        panePage5 = (Pane) root5;
     }
 
 
     private void loadForgotPasswordScene() {
-        try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("views/recoverPres.fxml"));
-            Parent root = loader.load();
-            RecoverAccountController controller = loader.getController();
-            controller.startController = this;
-
-            forgotPage = (Pane) root;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());     System.out.println(e.getCause());
-            e.printStackTrace();
-        }
+        var root = SceneManager.loadPage(App.class, "recoverPres");
+        var controller = (RecoverAccountController) SceneManager.getController("recoveryPres");
+        controller.startController = this;
+        forgotPage = (Pane) root;
     }
 
+
+
+    @Override
+    public void setElementsStyle(boolean darkMode) {
+        // no-op, the start screen has its own stylesheets and is not affected by the dark mode setting
+    }
 }

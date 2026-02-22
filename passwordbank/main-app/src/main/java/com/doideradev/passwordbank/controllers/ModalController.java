@@ -53,7 +53,7 @@ public class ModalController {
 
     private void setStyle() {
         String style = paneModal.getStyle();
-        if (App.darkMode) paneModal.setStyle(style + "-fx-border-color: WHITE;");
+        if (App.darkMode.get()) paneModal.setStyle(style + "-fx-border-color: WHITE;");
         else paneModal.setStyle(style + "-fx-border-color: #3B3B3B;");
     }
 

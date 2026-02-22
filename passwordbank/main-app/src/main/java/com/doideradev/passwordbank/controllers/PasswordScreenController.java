@@ -2,6 +2,7 @@ package com.doideradev.passwordbank.controllers;
 
 import java.util.Collections;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.model.Login;
 import com.doideradev.passwordbank.utilities.LoginList;
@@ -17,7 +18,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class PasswordScreenController {
+public class PasswordScreenController implements Controller {
 
     @FXML private Button buttonAddPass;
     @FXML private GridPane gPanePassword;
@@ -35,27 +36,11 @@ public class PasswordScreenController {
     public void initialize() {
         setActions();
         setTexts();
-        setTextTheme();
         setButtonsStyle();
+        setElementsStyle(App.darkMode.get());
         setUpGridPane();
-
-        App.getStage().maximizedProperty().addListener((a, b, c) -> {
-            if (c) setGridItems(colsMax, 100);
-            else setGridItems(colsMin, 50);
-        });
-        App.getStage().widthProperty().addListener((a, b, c) -> {
-            if (c.doubleValue() >= (1820)) 
-                 setGridItems(colsMax, 100);
-            else {
-                setGridItems(colsMin, hgap);
-                hgap = hgap + ((c.intValue() - b.intValue())/2);
-                if (hgap < 50 || hgap > 300) hgap = 50;
-            }
-        });
-        if (App.logs != null) {
-            passwordsList = App.logs.getObservableList();
-            changeListener();
-        }
+        setListeners();
+        
     }
 
     
@@ -96,7 +81,7 @@ public class PasswordScreenController {
     /**
      * Set the actions for the buttons in the password screen
      */
-    private void setActions() {
+    public void setActions() {
         buttonAddPass.setOnMouseClicked(event -> createNewPass());
         tFSearchPass.setOnKeyTyped(event -> {
             if (tFSearchPass.getText().length() >= 3) {searchPass();}
@@ -107,7 +92,7 @@ public class PasswordScreenController {
     
 
     /**
-     * Create a new password entry
+     * Creates a new password entry
      */
     private void createNewPass() {
         ModalManager modal = new ModalManager(null, buttonAddPass, ModalState.CREATE);
@@ -164,9 +149,35 @@ public class PasswordScreenController {
     }
 
 
+    private void setListeners() {
+        App.getStage().maximizedProperty().addListener((a, b, c) -> {
+            if (c) setGridItems(colsMax, 100);
+            else setGridItems(colsMin, 50);
+        });
+        App.getStage().widthProperty().addListener((a, b, c) -> {
+            if (c.doubleValue() >= (1820)) 
+                 setGridItems(colsMax, 100);
+            else {
+                setGridItems(colsMin, hgap);
+                hgap = hgap + ((c.intValue() - b.intValue())/2);
+                if (hgap < 50 || hgap > 300) hgap = 50;
+            }
+        });
+        if (App.logs != null) {
+            passwordsList = App.logs.getObservableList();
+            changeListener();
+        }
+    }
+
+    
     private void setButtonsStyle() {buttonAddPass.getStyleClass().setAll("button-Add");}
     
+
     private void setTexts() {textRegPass.setText("Passwords registered");}
 
-    protected void setTextTheme() {BaseController.setTextTheme(new Text[] {textRegPass});}
+
+    public void setElementsStyle(boolean darkMode) {
+        setTheme(darkMode, gPanePassword);
+        setTextTheme(darkMode, new Text[] {textRegPass});
+    }
 }

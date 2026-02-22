@@ -1,5 +1,6 @@
 package com.doideradev.passwordbank.controllers;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.doiderautils.SceneManager;
 import com.doideradev.passwordbank.App;
 
@@ -13,7 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
-public class RecoverAccountController {
+public class RecoverAccountController implements Controller {
 
     @FXML private Button buttonBack;
     @FXML private Button buttonConfirm;
@@ -40,27 +41,21 @@ public class RecoverAccountController {
 
     public void initialize() {
         setActions();
+        setElementsStyle(false);
         if (App.user.hasRecoverInfo()) 
             {loadMainPages();}
         else loadAltPages();
     }
     
     
-    
-    private void setActions() {
-        buttonBack.getStyleClass().setAll("button-LeftArrow");
-        buttonConfirm.getStyleClass().setAll("button-RightArrow");
-        buttonConfirm.setText("Next");
+    public void setActions() {
         buttonBack.setOnMouseClicked(event -> startController.changePage(false, startController.pLogin));
         buttonConfirm.setOnMouseClicked(event -> changePage(panePage1, true));
         buttonConfirm.setOnKeyPressed(event -> {
-        if (event.getCode().equals(KeyCode.ENTER)) {
-                changePage(panePage1, true);
-            }
-        });
-        textPresentation.setText("We're sorry to know you can no longer access your account...\n\n" +
-                                 "But don't worry, we can solve this problem,\n" + 
-                                 "you just have to provide the necessery info.");
+            if (event.getCode().equals(KeyCode.ENTER)) {
+                    changePage(panePage1, true);
+                }
+            });
     }
     
 
@@ -97,6 +92,7 @@ public class RecoverAccountController {
         panePage2 = (Pane) root2;
     }
     
+
     private void loadAltPages() {
         Parent root1 = SceneManager.loadPage(App.class, "recAccAlt1");
         altOptCtrl = (RecoverAltOptController) SceneManager.getController("recAccAlt1");
@@ -106,5 +102,16 @@ public class RecoverAccountController {
         SceneManager.setController("recAccAlt2", altOptCtrl);
         Parent root2 = SceneManager.loadPage(App.class, "recAccAlt2");
         panePage2 = (Pane) root2;
+    }
+
+
+    @Override
+    public void setElementsStyle(boolean darkMode) {
+        buttonBack.getStyleClass().setAll("button-LeftArrow");
+        buttonConfirm.getStyleClass().setAll("button-RightArrow");
+        buttonConfirm.setText("Next");
+        textPresentation.setText("We're sorry to know you can no longer access your account...\n\n" +
+                                 "But don't worry, we can solve this problem,\n" + 
+                                 "you just have to provide the necessery info.");
     }
 }

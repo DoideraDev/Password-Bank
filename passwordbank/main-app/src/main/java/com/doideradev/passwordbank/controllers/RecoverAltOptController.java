@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
+import com.doideradev.doiderautils.Controller;
 import com.doideradev.passwordbank.App;
 
 import javafx.fxml.FXML;
@@ -13,7 +14,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 
-public class RecoverAltOptController {
+public class RecoverAltOptController implements Controller {
 
 
     @FXML private Button buttonNext;
@@ -39,16 +40,15 @@ public class RecoverAltOptController {
 
 
     public void initialize() {
-        firstPageActions();
+        setActions();
+        setTexts();
     }
 
-    private void firstPageActions() {
+
+    public void setActions() {
+        // Actions for the first page
         buttonNext.setOnMouseClicked(event -> {
-            if (verifyFields() && createFile()) {
-                RecAccController.changePage(RecAccController.panePage2, true);
-                secondPageActions();
-            }
-        });
+            if (verifyFields() && createFile()) RecAccController.changePage(RecAccController.panePage2, true);});
         tFieldEmail.setOnKeyTyped(event -> {
             tFieldEmail.setStyle(null);
             labelHintEmail.setVisible(false);
@@ -61,13 +61,7 @@ public class RecoverAltOptController {
         labelHintEmail.setVisible(false);
         labelHintUsername.setVisible(false);
 
-        textDescription.setText("Please, provide the following information to recover your account");
-        labelUsername.setText("Type your username");
-        labelEmail.setText("Type your email");
-        textEmail.setText("Registered email: " + changeEmail());
-    }
-    private void secondPageActions() {
-        textDescCode.setText("A text file was created in your desktop, copy the 8-characters code and paste on the field bellow.");
+        // Actions for the second page
         buttonConfirmCode.setOnMouseClicked(event -> {
             if (verifyCode()) {
                 deleteFile();
@@ -79,6 +73,15 @@ public class RecoverAltOptController {
         lHintCode.setVisible(false);
     }
 
+
+    private void setTexts() {
+        textDescription.setText("Please, provide the following information to recover your account");
+        labelUsername.setText("Type your username");
+        labelEmail.setText("Type your email");
+        textEmail.setText("Registered email: " + changeEmail());
+
+        textDescCode.setText("A text file was created in your desktop, copy the 8-characters code and paste on the field bellow.");
+    }
 
 
     private boolean verifyCode() {
@@ -160,6 +163,7 @@ public class RecoverAltOptController {
 
     String writeError = "There was a problem trying to write the file";
 
+
     private boolean createFile() {
         try {
             File txtFile = new File(desktop + recoverFile);
@@ -185,8 +189,15 @@ public class RecoverAltOptController {
 
     }
 
+
     private void deleteFile() {
         File txtFile = new File(desktop + recoverFile);
         txtFile.delete();
+    }
+
+
+    @Override
+    public void setElementsStyle(boolean darkMode) {
+        // no elements to style in this controller
     }
 }

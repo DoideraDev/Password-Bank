@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 public abstract class SceneManager {
     
     private static Map<String, Parent> loadedPages = new HashMap<>();
-    private static Map<String, Object> loadedControllers = new HashMap<>();
+    private static Map<String, Controller> loadedControllers = new HashMap<>();
 
     /**
      * Loads the fxml file and returns the scene.
@@ -51,12 +51,16 @@ public abstract class SceneManager {
         return loadedPages.get(name);
     }
 
+    public static Map<String, Controller> getLoadedControllers() {
+        return Map.copyOf(loadedControllers);
+    }
+
     /**
      * Returns the controller of the loaded fxml file.
      * @param name - name of the fxml file whose controller is to be returned (without the .fxml extension)
      * @return Object - the controller of the loaded fxml file or null if the file was not loaded or there was an error loading the file
      */
-    public static Object getController(String name) {
+    public static Controller getController(String name) {
         return loadedControllers.get(name);
     }
 
@@ -65,7 +69,7 @@ public abstract class SceneManager {
      * @param name - name of the fxml file whose controller is to be set (without the .fxml extension)
      * @param controller - the controller to set for the specified fxml file
      */
-    public static void setController(String name, Object controller) {
+    public static void setController(String name, Controller controller) {
         loadedControllers.put(name, controller);
     }
 
@@ -81,7 +85,7 @@ public abstract class SceneManager {
             FXMLLoader sceneLoader = new FXMLLoader(anchor.getResource("views/" + name + ".fxml"));
             sceneLoader.setController(getController(name));
             Parent root = sceneLoader.load();
-            var controller = sceneLoader.getController();
+            var controller = (Controller) sceneLoader.getController();
             loadedPages.put(name, root);
             loadedControllers.put(name, controller);
 
@@ -91,5 +95,6 @@ public abstract class SceneManager {
             e.printStackTrace();
         }
     }
+
 
 }
