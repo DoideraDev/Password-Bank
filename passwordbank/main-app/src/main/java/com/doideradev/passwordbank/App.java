@@ -37,7 +37,6 @@ public class App extends Application {
     public  static UpdaterManager updaterManager;
     public  static BaseController baseCtrlInstance;
     public  static boolean haveUser;
-    // public  static boolean darkMode = true;
     public  static SimpleBooleanProperty darkMode = new SimpleBooleanProperty(false);
     public  static boolean stayLoggedIn = false;
     public  static AppConfigs configs;
@@ -59,7 +58,6 @@ public class App extends Application {
         verifyUserProps();
         setObservables();
         Scene mainScene = decideFirstPage();
-        
 
         primaryStage.setScene(mainScene);
         primaryStage.show();

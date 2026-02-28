@@ -56,7 +56,16 @@ public class FXWindowControl {
     private double mouseXPos,         mouseYPos;
     private double stageWidth,      stageHeight;
     private double lastMouseXPos, lastMouseYPos;
+
+    /**
+     * This variable are used to track the last (x, y) position of the stage relative to the screen.
+    */
     private double lastStageXPos, lastStageYPos;
+
+    /**
+     * These variables are used to track the last width and height of the stage, which is useful for restoring the stage to its previous size when it is maximized and then restored.
+     */
+    private double lastStageWidth, lastStageHeight;
     private double moveOffSetX,     moveOffSetY;
     private ResizeDirection dir;
 
@@ -78,10 +87,9 @@ public class FXWindowControl {
 
 
 
-    
-
-
-
+    /**
+     * This method is responsible for setting the tooltips for the buttons in the tittle bar.
+     */
     private void tips() {
         Tooltip closeTip = new Tooltip("Close");
         closeTip.setShowDelay(Duration.millis(500));
@@ -109,7 +117,9 @@ public class FXWindowControl {
         windowMainOperations();
         createIconMenu();
 
-        parentNode.setOnMouseMoved(positionControl());
+        parentNode.setOnMouseMoved(moveHandle());
+        parentNode.setOnMouseClicked(toggleMaximize());
+        parentNode.setOnMouseDragged(dragHandle());
         parentNode.setOnMousePressed(event -> {
             lastMouseXPos = event.getScreenX();
             lastMouseYPos = event.getScreenY();
@@ -117,10 +127,10 @@ public class FXWindowControl {
             lastStageYPos = primaryStage.getY();
             stageHeight = primaryStage.getHeight();
             stageWidth = primaryStage.getWidth();
-            moveOffSetX = primaryStage.getX() - event.getScreenX();
-            moveOffSetY = primaryStage.getY() - event.getScreenY();
+
+            moveOffSetX = (lastStageXPos - lastMouseXPos);
+            moveOffSetY = (lastStageYPos - lastMouseYPos);
         });
-        parentNode.setOnMouseDragged(doStageAction());
         parentNode.setOnMouseReleased(event -> {
             if (primaryStage.getHeight() < App.defH) {
                 primaryStage.setHeight(App.defH);
@@ -129,7 +139,6 @@ public class FXWindowControl {
                 primaryStage.setWidth(App.defW);
             }
         });
-        parentNode.setOnMouseClicked(toggleMaximize());
         icon.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                 parentNode.setOnMouseClicked(null);
@@ -149,7 +158,10 @@ public class FXWindowControl {
     }
     
     
-    
+
+    /**
+     * Create the context menu for the icon in the title bar, which contains the options to maximize, minimize, restore and close the application.
+     */
     private void createIconMenu() {
         MenuItem maxItem = new MenuItem("maximize");
         maxItem.setOnAction(event -> doMaximizing());
@@ -169,10 +181,9 @@ public class FXWindowControl {
 
 
 
-
-
-
-
+    /**
+     * Set the main operations of the window, such as closing, maximizing and minimizing. Also set the key combination for closing the application (Alt + F4).
+     */
     private void windowMainOperations() {
         activeScene.setOnKeyPressed(event -> {
             if (event.isAltDown() && 
@@ -186,268 +197,294 @@ public class FXWindowControl {
 
 
 
+    /**
+     * This method is responsible for toggling the maximized state of the stage when the user double clicks on the title bar. It checks if the click count is 2, if the click is within the first 25 pixels of the scene (which is where the title bar is located) and if the primary mouse button was used. If all these conditions are met, it calls the doMaximizing() method to toggle the maximized state of the stage.
+     * @return an EventHandler that handles the mouse click event for toggling the maximized state of the stage.
+     */
     private EventHandler<MouseEvent> toggleMaximize() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent arg0) {
-                if ((arg0.getClickCount() == 2) && 
-                    (arg0.getSceneY() <= 25) &&
-                    (arg0.getButton() == MouseButton.PRIMARY)) {
-                    doMaximizing();
-                }
+        return arg0 -> {
+            if ((arg0.getClickCount() == 2) && 
+                (arg0.getSceneY() <= 25) &&
+                (arg0.getButton() == MouseButton.PRIMARY)) {
+                doMaximizing();
             }
         };
     }
 
 
+    /**
+     * This method is responsible for maximizing and restoring the stage. When the stage is maximized, it removes the padding from the scene and removes the round corners from the borders. When the stage is restored, it restores the attributes that were removed when maximizing.
+     */
     private void doMaximizing() {
         if (primaryStage.isMaximized()) {
-            primaryStage.setWidth(App.defW);
-            primaryStage.setHeight(App.defH);
+            primaryStage.setWidth(lastStageWidth);
+            primaryStage.setHeight(lastStageHeight);
             setScenePadding(true);
             restoreRoundCorners();
             primaryStage.setMaximized(false);
         } else {
+            lastStageWidth = primaryStage.getWidth();
+            lastStageHeight = primaryStage.getHeight();
             setScenePadding(false);
             removeRoundCorners();
             primaryStage.setMaximized(true);
         }
+
     }
 
 
-    private final void closeApplication() {
-        Platform.exit();
-    }
+    private final void closeApplication() {Platform.exit();}
     
 
-    private EventHandler<MouseEvent> positionControl() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent arg0) {
-                {
-                    isResizable = isDraggable = false;
-                    moveNorth = moveEast = moveSouth = moveWest = false;
-                    parentNode.setCursor(Cursor.DEFAULT);
-                }
-                
-                stageHeight = primaryStage.getHeight();
-                stageWidth = primaryStage.getWidth();
-                mouseXPos = arg0.getSceneX();
-                mouseYPos = arg0.getSceneY();
-                
+    /**
+     * This method is responsible for handling the mouse movement over the stage to determine if the user is trying to resize or drag the stage. It checks the position of the mouse relative to the edges of the stage and sets the appropriate flags for resizing and dragging. It also updates the cursor to indicate the possible actions (resizing or dragging) that can be performed based on the mouse position.
+     * 
+     * @return an EventHandler that handles the mouse movement event for determining the resizing and dragging actions for the stage.
+     */
+    private EventHandler<MouseEvent> moveHandle() {
+        return event -> {
+            {
+                isResizable = isDraggable = false;
+                moveNorth = moveEast = moveSouth = moveWest = false;
+                parentNode.setCursor(Cursor.DEFAULT);
+            }
+            
+            stageHeight = primaryStage.getHeight();
+            stageWidth = primaryStage.getWidth();
+            mouseXPos = event.getSceneX();
+            mouseYPos = event.getSceneY();
+            lastMouseXPos = event.getScreenX();
+            lastMouseYPos = event.getScreenY();
 
-                if (!primaryStage.isMaximized()) {
-                    if ((mouseYPos <= mouseDragOffset) && 
-                        (mouseYPos > mouseResizeOffset)) {
-                        isDraggable = true;
-                        return;
-                    }
-
-                    if (mouseYPos <= mouseResizeOffset) {
-                        isResizable = moveNorth = true;
-                        moveSouth = !moveNorth;
-                    } else moveNorth = false;
-
-                    if (stageHeight - mouseYPos <= mouseResizeOffset) {
-                        isResizable = moveSouth = true;
-                        moveNorth = !moveSouth;
-                    } else moveSouth = false;
-                    
-                    if (mouseXPos <= mouseResizeOffset) {
-                        isResizable = moveWest = true;
-                        moveEast = !moveWest;
-                    } else moveWest = false;
-
-                    if ((stageWidth - mouseXPos) <= mouseResizeOffset) {
-                        isResizable = moveEast = true;
-                        moveWest = !moveEast;
-                    } else moveEast = false;
+            if (!primaryStage.isMaximized()) {
+                if ((mouseYPos <= mouseDragOffset) && 
+                    (mouseYPos > mouseResizeOffset)) {
+                    isDraggable = true;
+                    return;
                 }
 
-                setDirectionToResize();
-            };
+                // upper edge
+                if (mouseYPos <= mouseResizeOffset) {
+                    isResizable = moveNorth = true;
+                    moveSouth = !moveNorth;
+                } else moveNorth = false;
+
+                // lower edge
+                if (stageHeight - mouseYPos <= mouseResizeOffset) {
+                    isResizable = moveSouth = true;
+                    moveNorth = !moveSouth;
+                } else moveSouth = false;
+                
+                // left edge
+                if (mouseXPos <= mouseResizeOffset) {
+                    isResizable = moveWest = true;
+                    moveEast = !moveWest;
+                } else moveWest = false;
+
+                // right edge
+                if ((stageWidth - mouseXPos) <= mouseResizeOffset) {
+                    isResizable = moveEast = true;
+                    moveWest = !moveEast;
+                } else moveEast = false;
+            }
+
+            setDirectionToResize();
+        };
+        
+    }
+
+
+    /**
+     * This method ir responsible for handling hte dragging and resizing of the stage when the user clicks and drags on the edges or corners of the stage.
+     * @return an EventHandler that handles the mouse drag event for dragging and resizing the stage.
+     */
+    private EventHandler<MouseEvent> dragHandle() {
+        return event -> {
+            if (isResizable && (event.getButton() == MouseButton.PRIMARY)) {
+                double newHeight, newWidth;
+                double offset;
+                switch (dir) {
+                    case N:
+                        newHeight = stageHeight - (event.getScreenY() - lastMouseYPos);
+                        
+                        if (newHeight > App.defH) {
+                            primaryStage.setY(event.getScreenY());
+                            primaryStage.setHeight(newHeight);
+                            lastStageYPos = event.getScreenY();
+                        } else {
+                            primaryStage.setY(lastStageYPos);
+                            primaryStage.setHeight(newHeight);
+                            if (event.getScreenY() == lastStageYPos) {
+                                primaryStage.setHeight(App.defH);
+                            }
+                        }
+                        stageHeight = primaryStage.getHeight();
+                        lastMouseYPos = event.getScreenY();
+                        break;
+    
+                    case E:
+                        newWidth = stageWidth + (event.getScreenX() - lastMouseXPos);
+                        
+                        if (newWidth > App.defW) {
+                            primaryStage.setWidth(newWidth);
+                            lastMouseXPos = event.getScreenX();
+                        }
+                        stageWidth = primaryStage.getWidth();
+                        
+                        break;
+                        
+                    case S:
+                        offset = event.getScreenY() - lastMouseYPos;
+                        
+                        if (offset == 0) break;
+                        newHeight = stageHeight + (offset);
+                        
+                        if (newHeight > App.defH) {
+                            primaryStage.setHeight(newHeight);
+                            lastMouseYPos = event.getScreenY();
+                        }
+                        
+                        stageHeight = primaryStage.getHeight();
+                        break;
+                        
+                    case W:
+                        offset = event.getScreenX() - lastMouseXPos;
+
+                        if (offset == 0) break;
+                        newWidth = primaryStage.getWidth() - offset;
+                        
+                        if (newWidth > App.defW) {
+                            primaryStage.setX(offset + primaryStage.getX());
+                            primaryStage.setWidth(newWidth);
+                            lastMouseXPos = event.getScreenX();
+                        }
+                        
+                        break;
+    
+                    case NE:
+                        newHeight = stageHeight - (event.getScreenY() - lastMouseYPos);
+                        newWidth  = stageWidth  + (event.getScreenX() - lastMouseXPos);
+    
+                        if (newHeight > App.defH) {
+                            primaryStage.setY(event.getScreenY());
+                            primaryStage.setHeight(newHeight);
+                            lastStageYPos = event.getScreenY();
+                        } else {
+                            primaryStage.setY(lastStageYPos);
+                            primaryStage.setHeight(newHeight);
+                            if (event.getScreenY() == lastStageYPos) {
+                                primaryStage.setHeight(App.defH);
+                            }
+                        }
+    
+                        if (newWidth > App.defW) primaryStage.setWidth(newWidth);
+                        else primaryStage.setWidth(newWidth);
+    
+                        stageHeight = primaryStage.getHeight();
+                        stageWidth  = primaryStage.getWidth();
+                        lastMouseYPos = event.getScreenY();
+                        lastMouseXPos = event.getScreenX();
+                        break;
+    
+                    case NW:
+                        newHeight = stageHeight - (event.getScreenY() - lastMouseYPos);
+                        newWidth  = stageWidth  - (event.getScreenX() - lastMouseXPos);
+                        
+                        if (newHeight > App.defH) {
+                            primaryStage.setY(event.getScreenY());
+                            primaryStage.setHeight(newHeight);
+                            lastStageYPos = event.getScreenY();
+                        } else {
+                            primaryStage.setY(lastStageYPos);
+                            primaryStage.setHeight(newHeight);
+                            if (event.getScreenY() == lastStageYPos) {
+                                primaryStage.setHeight(App.defH);
+                            }
+                        }
+    
+                        if (newWidth > App.defW) {
+                            primaryStage.setX(event.getScreenX());
+                            primaryStage.setWidth(newWidth);
+                            lastStageXPos = event.getScreenX();
+                        } else {
+                            primaryStage.setX(lastStageXPos);
+                            primaryStage.setWidth(newWidth);
+                        }  
+                        
+                        stageHeight = primaryStage.getHeight();
+                        stageWidth  = primaryStage.getWidth();
+                        lastMouseXPos = event.getScreenX();
+                        lastMouseYPos = event.getScreenY();
+                        break;
+    
+                    case SE:
+                        newHeight = stageHeight + (event.getScreenY() - lastMouseYPos);
+                        newWidth = stageWidth + (event.getScreenX() - lastMouseXPos);
+    
+                        if (newHeight > App.defH) primaryStage.setHeight(newHeight);
+                        else primaryStage.setHeight(newHeight);
+                        if (newWidth > App.defW) primaryStage.setWidth(newWidth);
+                        else primaryStage.setWidth(newWidth);
+                        
+                        stageHeight = primaryStage.getHeight();
+                        stageWidth  = primaryStage.getWidth();
+                        lastMouseXPos = event.getScreenX();
+                        lastMouseYPos = event.getScreenY();
+                        break;
+    
+                    case SW:
+                        newHeight = stageHeight + (event.getScreenY() - lastMouseYPos);
+                        newWidth = stageWidth - (event.getScreenX() - lastMouseXPos);
+    
+                        
+                        if (newHeight > App.defH) primaryStage.setHeight(newHeight);
+                        else primaryStage.setHeight(newHeight);
+    
+                        if (newWidth > App.defW) {
+                            primaryStage.setX(event.getScreenX());
+                            primaryStage.setWidth(newWidth);
+                            lastStageXPos = event.getScreenX();
+                        } else {
+                            primaryStage.setX(lastStageXPos);
+                            primaryStage.setWidth(newWidth);
+                        }
+                        
+                        
+                        stageHeight = primaryStage.getHeight();
+                        stageWidth = primaryStage.getWidth();
+                        lastMouseXPos = event.getScreenX();
+                        lastMouseYPos = event.getScreenY();
+                        break;
+    
+                    default:
+                        break;
+                };
+            }
+    
+            if (isDraggable && event.getButton().equals(MouseButton.PRIMARY)) {
+                primaryStage.setX(event.getScreenX() + moveOffSetX);
+                primaryStage.setY(event.getScreenY() + moveOffSetY);
+            }
+
         };
     }
 
 
 
-    private EventHandler<MouseEvent> doStageAction() {
-        return new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent arg0) {
-                if (isResizable && (arg0.getButton() == MouseButton.PRIMARY)) {
-                    double newHeight, newWidth;
-                    switch (dir) {
-                        case N:
-                            newHeight = stageHeight - (arg0.getScreenY() - lastMouseYPos);
-                            
-                            if (newHeight > App.defH) {
-                                primaryStage.setY(arg0.getScreenY());
-                                primaryStage.setHeight(newHeight);
-                                lastStageYPos = arg0.getScreenY();
-                            } else {
-                                primaryStage.setY(lastStageYPos);
-                                primaryStage.setHeight(newHeight);
-                                if (arg0.getScreenY() == lastStageYPos) {
-                                    primaryStage.setHeight(App.defH);
-                                }
-                            }
-                            stageHeight = primaryStage.getHeight();
-                            lastMouseYPos = arg0.getScreenY();
-                            break;
-
-                        case E:
-                            newWidth = stageWidth + (arg0.getScreenX() - lastMouseXPos);
-
-                            if (newWidth > App.defW) primaryStage.setWidth(newWidth);
-                            else primaryStage.setWidth(newWidth);
-
-                            stageWidth = primaryStage.getWidth();
-                            lastMouseXPos = arg0.getScreenX();
-                            break;
-
-                        case S:
-                            newHeight = stageHeight + (arg0.getScreenY() - lastMouseYPos);
-
-                            if (newHeight > App.defH) primaryStage.setHeight(newHeight);
-                            else primaryStage.setHeight(newHeight);
-                            
-                            stageHeight = primaryStage.getHeight();
-                            lastMouseYPos = arg0.getScreenY();
-                            break;
-
-                        case W:
-                            newWidth = primaryStage.getWidth() - (arg0.getScreenX() - lastMouseXPos);
-                            
-                            if (newWidth > App.defW) {
-                                primaryStage.setX(arg0.getScreenX());
-                                primaryStage.setWidth(newWidth);
-                                lastStageXPos = arg0.getScreenX();
-                            } else {
-                                primaryStage.setX(lastStageXPos);
-                                primaryStage.setWidth(newWidth);
-                            }
-                            
-                            lastMouseXPos = arg0.getScreenX();
-                            break;
-
-                        case NE:
-                            newHeight = stageHeight - (arg0.getScreenY() - lastMouseYPos);
-                            newWidth  = stageWidth  + (arg0.getScreenX() - lastMouseXPos);
-
-                            if (newHeight > App.defH) {
-                                primaryStage.setY(arg0.getScreenY());
-                                primaryStage.setHeight(newHeight);
-                                lastStageYPos = arg0.getScreenY();
-                            } else {
-                                primaryStage.setY(lastStageYPos);
-                                primaryStage.setHeight(newHeight);
-                                if (arg0.getScreenY() == lastStageYPos) {
-                                    primaryStage.setHeight(App.defH);
-                                }
-                            }
-
-                            if (newWidth > App.defW) primaryStage.setWidth(newWidth);
-                            else primaryStage.setWidth(newWidth);
-
-                            stageHeight = primaryStage.getHeight();
-                            stageWidth  = primaryStage.getWidth();
-                            lastMouseYPos = arg0.getScreenY();
-                            lastMouseXPos = arg0.getScreenX();
-                            break;
-
-                        case NW:
-                            newHeight = stageHeight - (arg0.getScreenY() - lastMouseYPos);
-                            newWidth  = stageWidth  - (arg0.getScreenX() - lastMouseXPos);
-                            
-                            if (newHeight > App.defH) {
-                                primaryStage.setY(arg0.getScreenY());
-                                primaryStage.setHeight(newHeight);
-                                lastStageYPos = arg0.getScreenY();
-                            } else {
-                                primaryStage.setY(lastStageYPos);
-                                primaryStage.setHeight(newHeight);
-                                if (arg0.getScreenY() == lastStageYPos) {
-                                    primaryStage.setHeight(App.defH);
-                                }
-                            }
-
-                            if (newWidth > App.defW) {
-                                primaryStage.setX(arg0.getScreenX());
-                                primaryStage.setWidth(newWidth);
-                                lastStageXPos = arg0.getScreenX();
-                            } else {
-                                primaryStage.setX(lastStageXPos);
-                                primaryStage.setWidth(newWidth);
-                            }  
-                            
-                            stageHeight = primaryStage.getHeight();
-                            stageWidth  = primaryStage.getWidth();
-                            lastMouseXPos = arg0.getScreenX();
-                            lastMouseYPos = arg0.getScreenY();
-                            break;
-
-                        case SE:
-                            newHeight = stageHeight + (arg0.getScreenY() - lastMouseYPos);
-                            newWidth = stageWidth + (arg0.getScreenX() - lastMouseXPos);
-
-                            if (newHeight > App.defH) primaryStage.setHeight(newHeight);
-                            else primaryStage.setHeight(newHeight);
-                            if (newWidth > App.defW) primaryStage.setWidth(newWidth);
-                            else primaryStage.setWidth(newWidth);
-                            
-                            stageHeight = primaryStage.getHeight();
-                            stageWidth  = primaryStage.getWidth();
-                            lastMouseXPos = arg0.getScreenX();
-                            lastMouseYPos = arg0.getScreenY();
-                            break;
-
-                        case SW:
-                            newHeight = stageHeight + (arg0.getScreenY() - lastMouseYPos);
-                            newWidth = stageWidth - (arg0.getScreenX() - lastMouseXPos);
-
-                            
-                            if (newHeight > App.defH) primaryStage.setHeight(newHeight);
-                            else primaryStage.setHeight(newHeight);
-
-                            if (newWidth > App.defW) {
-                                primaryStage.setX(arg0.getScreenX());
-                                primaryStage.setWidth(newWidth);
-                                lastStageXPos = arg0.getScreenX();
-                            } else {
-                                primaryStage.setX(lastStageXPos);
-                                primaryStage.setWidth(newWidth);
-                            }
-                            
-                            
-                            stageHeight = primaryStage.getHeight();
-                            stageWidth = primaryStage.getWidth();
-                            lastMouseXPos = arg0.getScreenX();
-                            lastMouseYPos = arg0.getScreenY();
-                            break;
-
-                        default:
-                            break;
-                    };
-                }
-
-                if (isDraggable && arg0.getButton().equals(MouseButton.PRIMARY)) {
-                    primaryStage.setX(arg0.getScreenX() + moveOffSetX);
-                    primaryStage.setY(arg0.getScreenY() + moveOffSetY);
-                }
-            };
-        };
-    }
-
-
-
-
+    /**
+     * This method is responsible for setting the padding of the scene when the stage is maximized or restored. When the stage is maximized, it removes the padding from the scene to allow the stage to occupy the entire screen. When the stage is restored, it sets the padding back to its original value to allow for resizing and dragging of the stage.
+     * @param set a boolean value that indicates whether to set the padding (true) or remove it (false).
+     */
     private void setScenePadding(boolean set) {
         if (set) parentNode.setPadding(new Insets(mouseResizeOffset));
         else     parentNode.setPadding(new Insets(0));
     }
 
 
+
+    /**
+     * This method is responsible for removing the round corners from the borders of the stage when it is maximized. This is done by iterating through the list of borders and setting their style to remove the border radius and background radius. This allows the stage to have sharp corners when it is maximized, which is a common behavior for maximized windows in most operating systems.
+     */
     private void removeRoundCorners() {
         for (Node node : borders) {
             if (node != null) {
@@ -456,6 +493,9 @@ public class FXWindowControl {
         }
     }
     
+
+
+
     private void restoreRoundCorners() {
         if (topBorder != null) topBorder.setStyle(topStyle);
         if (rightBorder != null) rightBorder.setStyle(rightStyle);
