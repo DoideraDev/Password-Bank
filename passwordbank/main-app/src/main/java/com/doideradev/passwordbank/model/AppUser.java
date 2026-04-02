@@ -1,6 +1,10 @@
 package com.doideradev.passwordbank.model;
 
 import java.io.Serializable;
+import com.doideradev.doiderautils.QnASimpleList;
+import com.doideradev.doiderautils.UtilsClasses.Answer;
+import com.doideradev.doiderautils.UtilsClasses.Question;
+
 
 public class AppUser implements Serializable {
 
@@ -11,37 +15,33 @@ public class AppUser implements Serializable {
     private String username;
     private String altEmail;
     private String mobileNumber;
-    private String question1;
-    private String question2;
-    private String question3;
-    private String answer1;
-    private String answer2;
-    private String answer3;
     private boolean darkMode;
     private boolean stayLoggedIn;
     private boolean haveRecoverInfo;
-
-
+    private QnASimpleList recoveryQA;
+    private boolean[] haveQA;
+    private final int MAX_QA_PAIRS = 3;
 
 
     public AppUser() {    
+        recoveryQA = new QnASimpleList(MAX_QA_PAIRS);
+        haveQA = new boolean[MAX_QA_PAIRS];
+        for (int i = 0; i < MAX_QA_PAIRS; i++) haveQA[i] = false;
     }
 
     
 
-    public AppUser(String mainEmail, String password, String username, String altEmail, String mobileNumber, String question1,
-                   String question2, String question3, String answer1, String answer2, String answer3, boolean darkMode) {
+    public AppUser(String mainEmail, String password, String username, String altEmail, String mobileNumber, Question[] questions, Answer[] answers, boolean darkMode) {
+        recoveryQA = new QnASimpleList(MAX_QA_PAIRS);
+        haveQA = new boolean[MAX_QA_PAIRS];
+        for (int i = 0; i < MAX_QA_PAIRS; i++) haveQA[i] = false;
+
         setMainEmail(mainEmail);
         setPassword(password);
         setUsername(username);
         setMobileNumber(mobileNumber);
-        setQuestion1(question1);
-        setQuestion2(question2);
-        setQuestion3(question3);
-        setAnswer1(answer1);
-        setAnswer2(answer2);
-        setAnswer3(answer3);
         setDarkMode(darkMode);
+        setQuestions(questions, answers);
     }
 
 
@@ -61,24 +61,6 @@ public class AppUser implements Serializable {
     public String getMobileNumber() {return this.mobileNumber;}
     public void setMobileNumber(String number) {this.mobileNumber = number;}
 
-    public String getQuestion1() {return question1;}
-    public void setQuestion1(String question1) {this.question1 = question1;}
-
-    public String getQuestion2() {return question2;}
-    public void setQuestion2(String question2) {this.question2 = question2;}
-
-    public String getQuestion3() {return question3;}
-    public void setQuestion3(String question3) {this.question3 = question3;}
-
-    public String getAnswer1() {return answer1;}
-    public void setAnswer1(String answer1) {this.answer1 = answer1;}
-
-    public String getAnswer2() {return answer2;}
-    public void setAnswer2(String answer2) {this.answer2 = answer2;}
-
-    public String getAnswer3() {return answer3;}
-    public void setAnswer3(String answer3) {this.answer3 = answer3;}
-
     public boolean isDarkMode() {return darkMode;}
     public void setDarkMode(boolean darkMode) {this.darkMode = darkMode;}
 
@@ -87,6 +69,37 @@ public class AppUser implements Serializable {
 
     public boolean hasRecoverInfo() {return haveRecoverInfo;}
     public void setRecoverInfo(boolean recoverInfo) {this.haveRecoverInfo = recoverInfo;}
+
+    private void setQuestions(Question[] questions, Answer[] answers) {
+        for (int i = 0; i < MAX_QA_PAIRS; i++) setQuestion(i + 1, questions[i], answers[i]);
+    }
+    
+    public void setQuestion(int questNum, Question question, Answer answer) {
+        if ((questNum > 0 && questNum <= MAX_QA_PAIRS)) {
+            if (haveQA[questNum-1]) {
+                recoveryQA.changeQuestion(questNum, question, answer);
+                return;
+            }
+            recoveryQA.add(questNum, question, answer);
+            haveQA[questNum-1] = true;
+        }  
+    }
+
+    public void setAnswer(int questNum, Answer answer) {
+        if ((questNum > 0 && questNum <= MAX_QA_PAIRS) && haveQA[questNum-1]) {
+            recoveryQA.changeAnswer(questNum, answer);
+        }  
+    }
+
+    public Question getQuestion(int questNum) {
+        return recoveryQA.get(questNum).getKey();
+    }
+
+    public Answer getAnswer(int questNum) {
+        return recoveryQA.get(questNum).getValue();
+    }
+
+
 
     @Override
     public boolean equals(Object obj) {
@@ -113,14 +126,14 @@ public class AppUser implements Serializable {
             if (count < 5) return false;
             
             // Recovery Q&A checks - optional
-            count = (this.getQuestion1().equals(user.getQuestion1())) ? count + 1 : count;
-            count = (this.getQuestion2().equals(user.getQuestion2())) ? count + 1 : count;
-            count = (this.getQuestion3().equals(user.getQuestion3())) ? count + 1 : count;
-            if (count < 8) return false;
-            
-            count = (this.getAnswer1().equals(user.getAnswer1())) ? count + 1 : count;
-            count = (this.getAnswer2().equals(user.getAnswer2())) ? count + 1 : count;
-            count = (this.getAnswer3().equals(user.getAnswer3())) ? count + 1 : count;
+            for (int i = 1; i <= MAX_QA_PAIRS; i++) {
+                if (haveQA[i-1]) {
+                    if (user.haveQA[i-1]) {
+                        count = (this.getQuestion(i).equals(user.getQuestion(i))) ? count + 1 : count;
+                        count = (this.getAnswer(i).equals(user.getAnswer(i))) ? count + 1 : count;
+                    }
+                }
+            }
             if (count < 11) return false;
         }
         return true;

@@ -1,10 +1,12 @@
 package com.doideradev.passwordbank.controllers;
 
 import com.doideradev.doiderautils.Controller;
+import com.doideradev.doiderautils.UtilsClasses;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.model.AppUser;
 import com.doideradev.passwordbank.utilities.QuestionsList;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -76,7 +78,7 @@ public class UserInfoScreenController implements Controller {
     
 
     private final QuestionsList list = new QuestionsList();
-
+    private final ObservableList<String> questionsObsList = list.getList();
 
     public void initialize() {
         setActions();
@@ -97,21 +99,21 @@ public class UserInfoScreenController implements Controller {
             tFieldAltEmail.setText(user.getAltEmail());
             if (user.getMobileNumber() != null) 
                 tFieldPhoneNum.setText(user.getMobileNumber());
-            cBoxQ1.setItems(list.getList());
-            cBoxQ1.setValue(user.getQuestion1());
-            cBoxQ2.setItems(list.getList());
-            cBoxQ2.setValue(user.getQuestion2());
-            cBoxQ3.setItems(list.getList());
-            cBoxQ3.setValue(user.getQuestion3());
-            tAreaA1.setText(user.getAnswer1());
-            tAreaA2.setText(user.getAnswer2());
-            tAreaA3.setText(user.getAnswer3());
+            cBoxQ1.setItems(questionsObsList);
+            cBoxQ1.setValue(user.getQuestion(1).getQuestion());
+            cBoxQ2.setItems(questionsObsList);
+            cBoxQ2.setValue(user.getQuestion(2).getQuestion());
+            cBoxQ3.setItems(questionsObsList);
+            cBoxQ3.setValue(user.getQuestion(3).getQuestion());
+            tAreaA1.setText(user.getAnswer(1).getAnswer());
+            tAreaA2.setText(user.getAnswer(2).getAnswer());
+            tAreaA3.setText(user.getAnswer(3).getAnswer());
         } else {
-            cBoxQ1.setItems(list.getList());
+            cBoxQ1.setItems(questionsObsList);
             cBoxQ1.setValue(defQuestString);
-            cBoxQ2.setItems(list.getList());
+            cBoxQ2.setItems(questionsObsList);
             cBoxQ2.setValue(defQuestString);
-            cBoxQ3.setItems(list.getList());
+            cBoxQ3.setItems(questionsObsList);
             cBoxQ3.setValue(defQuestString);
         }
     }
@@ -130,6 +132,7 @@ public class UserInfoScreenController implements Controller {
 
         buttonDeleteAcc.setOnMouseClicked(event -> {
             if (App.deleteAccount()) {
+                App.setMinAppSize();
                 App.changePage("start");
             } else App.changePage("base");
         });
@@ -235,8 +238,8 @@ public class UserInfoScreenController implements Controller {
     
 
     private void saveChanges() {
-        AppUser user;
-        user = App.user;
+        var user = new AppUser();
+
         user.setUsername(tFieldusername.getText());
         user.setPassword(pFieldPassword.getText());
 
@@ -245,16 +248,30 @@ public class UserInfoScreenController implements Controller {
             if (!(tFieldPhoneNum.getText() == null)) {
                 user.setMobileNumber(tFieldPhoneNum.getText());
             }
+            UtilsClasses util = new UtilsClasses();
             
-            user.setQuestion1(cBoxQ1.getSelectionModel().getSelectedItem());
-            user.setQuestion2(cBoxQ2.getSelectionModel().getSelectedItem());
-            user.setQuestion3(cBoxQ3.getSelectionModel().getSelectedItem());
-            user.setAnswer1(tAreaA1.getText());
-            user.setAnswer2(tAreaA2.getText());
-            user.setAnswer3(tAreaA3.getText());
+            var qSelect1 = cBoxQ1.getSelectionModel().getSelectedItem();
+            var qSelect2 = cBoxQ2.getSelectionModel().getSelectedItem();
+            var qSelect3 = cBoxQ3.getSelectionModel().getSelectedItem();
+            var q1 = util.new Question(qSelect1);
+            var q2 = util.new Question(qSelect2);
+            var q3 = util.new Question(qSelect3);
+
+            var aSelect1 = tAreaA1.getText();
+            var aSelect2 = tAreaA2.getText();
+            var aSelect3 = tAreaA3.getText();
+            var a1 = util.new Answer(aSelect1);
+            var a2 = util.new Answer(aSelect2);
+            var a3 = util.new Answer(aSelect3);
+
+            user.setQuestion(1, q1, a1);
+            user.setQuestion(2, q2, a2);
+            user.setQuestion(3, q3, a3);
 
             user.setRecoverInfo(true);
         }
+
+        App.UpdateAccount(user);
     }
 
 
@@ -356,6 +373,10 @@ public class UserInfoScreenController implements Controller {
     }
 
 
+    /**
+     * Clean the styles of the fields and hide the hint labels after a delay or immediately depending on the value of {@code delay}.
+     * @param delay - if true, the styles will be cleaned and the labels will be hidden after a delay, if false, the styles will be cleaned and the labels will be hidden immediately.
+     */
     private void cleanView(boolean delay) {
         if (delay) {
             new Thread(() -> {
@@ -395,22 +416,11 @@ public class UserInfoScreenController implements Controller {
         }
     }
 
-
     private void animateFieldsError(TextField tField, Label labelHint) {
         labelHint.setStyle(labelStyleBad);
         labelHint.setVisible(true);
         tField.setStyle(tFieldErrorStyle);
     }
-
-
-    private void setButtonsStyle() {
-        buttonBack.getStyleClass().setAll("button-Prev");
-        buttonDeleteAcc.getStyleClass().setAll("button-Delete");
-        buttonLogout.getStyleClass().setAll("button-Logout");
-        buttonSaveChanges.getStyleClass().setAll("button-SaveChange");
-        buttonShowPass.getStyleClass().setAll("button-HidePass");
-    }
-    
 
     private void setTexts() {
         buttonLogout.setText("Log out");
@@ -429,6 +439,16 @@ public class UserInfoScreenController implements Controller {
         labelQ2.setText("Question 2");
         labelQ3.setText("Question 3");
     }
+
+    private void setButtonsStyle() {
+        buttonBack.getStyleClass().setAll("button-Prev");
+        buttonDeleteAcc.getStyleClass().setAll("button-Delete");
+        buttonLogout.getStyleClass().setAll("button-Logout");
+        buttonSaveChanges.getStyleClass().setAll("button-SaveChange");
+        buttonShowPass.getStyleClass().setAll("button-HidePass");
+    }
+    
+
 
 
 

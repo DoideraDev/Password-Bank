@@ -32,7 +32,7 @@
                   <RowConstraints maxHeight="295.0" minHeight="10.0" prefHeight="144.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <Text fx:id="textPresentation" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="320.0" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                  <Text fx:id="textPresentation" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets top="180.0" />
                      </GridPane.margin>
@@ -40,20 +40,14 @@
                         <Font size="20.0" />
                      </font>
                   </Text>
-                  <Button fx:id="buttonConfirm" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" stylesheets="@../styles/start-buttons.css" textFill="#8a59ee" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                  <Button fx:id="buttonConfirm" mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <GridPane.margin>
                         <Insets right="40.0" />
                      </GridPane.margin>
-                     <font>
-                        <Font name="System Bold" size="15.0" />
-                     </font>
-                     <padding>
-                        <Insets right="20.0" />
-                     </padding>
                   </Button>
                </children>
             </GridPane>
-            <Button fx:id="buttonBack" focusTraversable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" stylesheets="@../styles/start-buttons.css" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+            <Button fx:id="buttonBack" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                <GridPane.margin>
                   <Insets right="20.0" top="40.0" />
                </GridPane.margin>

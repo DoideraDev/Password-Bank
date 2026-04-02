@@ -30,6 +30,9 @@ public abstract class SceneManager {
         if (!loadedPages.containsKey(name)) loader(name, anchor);
 
         Parent rootScene = loadedPages.get(name);
+        var oldScene = rootScene.getScene();
+        if (oldScene != null) oldScene.setRoot(new Parent(){}); 
+        
         Scene scene = new Scene(rootScene);
         scene.setFill(Color.rgb(0, 0, 0, 0.01));
 
@@ -45,11 +48,10 @@ public abstract class SceneManager {
      * @return Parent - the root node of the loaded fxml file or null if there was an error loading the file
      */
     public static Parent loadPage(Class<?> anchor, String name) {
-        
         if (!loadedPages.containsKey(name)) loader(name, anchor);
-
         return loadedPages.get(name);
     }
+
 
     public static Map<String, Controller> getLoadedControllers() {
         return Map.copyOf(loadedControllers);
@@ -61,11 +63,15 @@ public abstract class SceneManager {
      * @return Object - the controller of the loaded fxml file or null if the file was not loaded or there was an error loading the file
      */
     public static Controller getController(String name) {
-        return loadedControllers.get(name);
+        Controller ctlr;
+        if ((ctlr = loadedControllers.get(name)) != null) 
+            ctlr.initialize();
+        return ctlr;
     }
 
     /**
      * Sets the controller for a specific fxml file. This is useful when the controller needs to be created before loading the fxml file, or when the controller needs to be shared between multiple fxml files.
+     * <b>IMPORTANT:</b> This method should be called before loading the fxml file, otherwise the controller will not be overridden by the one created by the FXMLLoader.
      * @param name - name of the fxml file whose controller is to be set (without the .fxml extension)
      * @param controller - the controller to set for the specified fxml file
      */
@@ -93,6 +99,7 @@ public abstract class SceneManager {
             System.out.println("ERROR: There was an error trying to load the desired file... ");
             System.out.println(e.getMessage() + "\n\n");
             e.printStackTrace();
+            System.out.println("=========================================================================================\n");
         }
     }
 

@@ -27,7 +27,6 @@ public class RecoverAltOptController implements Controller {
     @FXML private Text textDescription;
     @FXML private Text textEmail;
 
-
     @FXML private Button buttonConfirmCode;
     @FXML private Label lHintCode;
     @FXML private TextField tFieldCode;
@@ -40,8 +39,10 @@ public class RecoverAltOptController implements Controller {
 
 
     public void initialize() {
-        setActions();
-        setTexts();
+        App.getStage().setOnShowing(e -> {
+            setActions();
+            setTexts();
+        });
     }
 
 

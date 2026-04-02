@@ -42,9 +42,11 @@ public class RecoverAccountController implements Controller {
     public void initialize() {
         setActions();
         setElementsStyle(false);
-        if (App.user.hasRecoverInfo()) 
-            {loadMainPages();}
-        else loadAltPages();
+        App.getStage().setOnShown(e -> {
+            if (App.user.hasRecoverInfo()) 
+                {loadMainPages();}
+            else loadAltPages();
+        });
     }
     
     
@@ -87,7 +89,7 @@ public class RecoverAccountController implements Controller {
         mainOptCtrl.RecAccController = this;
         panePage1 = (Pane) root1;
         
-        SceneManager.setController("recAccFirst", mainOptCtrl);
+        SceneManager.setController("recAccQuest", mainOptCtrl);
         Parent root2 = SceneManager.loadPage(App.class, "recAccQuest");
         panePage2 = (Pane) root2;
     }

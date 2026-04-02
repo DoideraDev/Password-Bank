@@ -14,29 +14,29 @@ import java.nio.file.Path;
 import com.doideradev.passwordbank.App;
 import com.doideradev.passwordbank.model.AppUser;
 
-public final class FilesManager {
+public abstract class FilesManager {
 
-    private final String rootDataDirectory = System.getenv("APPDATA") + "\\Password Bank";
-    private final String filesDirectory = rootDataDirectory + "\\data\\";
-    private final String configsDirectory = rootDataDirectory + "\\configs\\";
-    private final String fileType = ".data";
-    private final String userFN = "User";
-    private final String passFN = "Pass";
-    private final String configFile = "app.config";
+    private static final String rootDataDirectory = System.getenv("APPDATA") + "\\Password Bank";
+    private static final String filesDirectory = rootDataDirectory + "\\data\\";
+    private static final String configsDirectory = rootDataDirectory + "\\configs\\";
+    private static final String fileType = ".data";
+    private static final String userFN = "User";
+    private static final String passFN = "Pass";
+    private static final String configFile = "app.config";
 
     private static AppUser user = null;
     private static LoginList logs = null;
     private static AppConfigs configs = null;
-    private File userFile;
-    private File passFile;
-    private File confFile;
+    private static File userFile;
+    private static File passFile;
+    private static File confFile;
     public static boolean haveUser;
     public static boolean havePass;
     public static boolean isConfigured;
 
 
     
-    public FilesManager() {
+    public static void loadFiles() {
         File configDir = new File(configsDirectory);
         File appDir = new File(filesDirectory);
         
@@ -65,9 +65,7 @@ public final class FilesManager {
 
 
 
-
-
-    public AppUser openUserFile() {
+    public static AppUser openUserFile() {
         try 
         {
             user = null;
@@ -94,11 +92,13 @@ public final class FilesManager {
                 System.out.println("Could not convert the extracted object to the desired Object Type. \n");
                 e.printStackTrace();
             }
+
+            System.out.println("==========================================================================\n");
         }
         return user;
     }
 
-    private void saveUserFile() {
+    private static void saveUserFile() {
         try 
         {
             FileOutputStream fileOutput = new FileOutputStream(userFile);
@@ -116,7 +116,7 @@ public final class FilesManager {
     }
 
 
-    public LoginList openPassFile() {
+    public static LoginList openPassFile() {
         try 
         {
             FileInputStream fileInput = new FileInputStream(passFile);
@@ -140,7 +140,7 @@ public final class FilesManager {
         return logs;
     }
 
-    private void savePassFile() {
+    private static void savePassFile() {
         try 
         {
             FileOutputStream fileOutput = new FileOutputStream(passFile);
@@ -157,7 +157,7 @@ public final class FilesManager {
     }
 
 
-    public AppConfigs getConfigs() {
+    public static AppConfigs getConfigs() {
         try 
         {
             FileInputStream fileInput = new FileInputStream(confFile);
@@ -176,7 +176,7 @@ public final class FilesManager {
         return null;
     }
 
-    public void saveConfigs() {
+    public static void saveConfigs() {
         try 
         {
             if (!App.configs.equals(configs)) {
@@ -188,7 +188,9 @@ public final class FilesManager {
             }
         } 
         catch (Exception e) {
+            System.out.println("Error saving configs file");
             System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -197,18 +199,14 @@ public final class FilesManager {
      * Delete all files related to the application.
      * @return true if all files were deleted, false if any of the files could not be deleted.
      */
-    public boolean deleteFiles() {
+    public static boolean deleteFiles() {
         try 
         {
-            boolean userDeleted = Files.deleteIfExists(userFile.toPath());
             boolean passDeleted = false;
             boolean dirDeleted = false;
-            if (userDeleted) {
-                passDeleted = deletePasswordFiles();
-            }
-            if (passDeleted) {
-                dirDeleted = Files.deleteIfExists(Path.of(filesDirectory));
-            }
+            boolean userDeleted = Files.deleteIfExists(userFile.toPath());
+            if (userDeleted) passDeleted = deletePasswordFiles();
+            if (passDeleted) dirDeleted = Files.deleteIfExists(Path.of(filesDirectory));
             return dirDeleted;
         } 
         catch (IOException e) {
@@ -223,7 +221,7 @@ public final class FilesManager {
      * 
      * @return true if the file was deleted, false if it was not possible to delete it, or if the file does not exist.
      */
-    private boolean deletePasswordFiles() {
+    private static boolean deletePasswordFiles() {
         try {return Files.deleteIfExists(passFile.toPath());} 
         catch (IOException e) {
             System.out.println(e.getMessage());
@@ -240,13 +238,12 @@ public final class FilesManager {
      * @param aUser - the user of the application
      * @param logins - the list of logins registered in the application
      */
-    public void closeFiles(AppUser aUser, LoginList logins) {
+    public static void closeFiles(AppUser aUser, LoginList logins) {
         user = aUser;
         logs = logins;
         if (!isConfigured) saveConfigs();
         if (user != null) saveUserFile();
         
         if (logs != null) {savePassFile();}
-        // else {deletePasswordFiles();}
     }
 }

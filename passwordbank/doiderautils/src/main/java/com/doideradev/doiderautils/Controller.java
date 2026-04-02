@@ -10,6 +10,9 @@ import javafx.scene.text.Text;
  */
 public interface Controller {
 
+
+    default void initialize() {};
+
     /**
      * Set the style of the controller based on the dark mode value.
      * @param darkMode the value of the dark mode property - true if dark mode is enabled, false otherwise.

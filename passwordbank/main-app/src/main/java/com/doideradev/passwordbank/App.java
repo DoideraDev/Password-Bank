@@ -1,16 +1,16 @@
 package com.doideradev.passwordbank;
 
-import java.util.Collections;
-
 import com.doideradev.passwordbank.controllers.BaseController;
 import com.doideradev.passwordbank.model.AppUser;
-import com.doideradev.passwordbank.model.Login;
-import com.doideradev.passwordbank.utilities.FilesManager;
 import com.doideradev.passwordbank.utilities.LoginList;
 import com.doideradev.passwordbank.utilities.UpdaterManager;
+import com.doideradev.passwordbank.utilities.AccountManager;
 import com.doideradev.passwordbank.utilities.AppConfigs;
+import com.doideradev.passwordbank.utilities.FXWindowControl;
 import com.doideradev.doiderautils.Controller;
 import com.doideradev.doiderautils.SceneManager;
+import com.doideradev.doiderautils.UtilsClasses.Answer;
+import com.doideradev.doiderautils.UtilsClasses.Question;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,23 +26,21 @@ public class App extends Application {
 
 
     private static Stage primaryStage;
-    public  static final FilesManager filesManager = new FilesManager();
     public  static final String appVersion = "v0.7.0-alpha";
     public  static final double defH = 724;
-    
-    
     public  static final double defW = 1284;
     public  static final double minH = 600;
     public  static final double minW = 400;
     public  static UpdaterManager updaterManager;
     public  static BaseController baseCtrlInstance;
     public  static boolean haveUser;
-    public  static SimpleBooleanProperty darkMode = new SimpleBooleanProperty(false);
     public  static boolean stayLoggedIn = false;
     public  static AppConfigs configs;
     public  static AppUser user;
     public  static LoginList logs;
+    public  static SimpleBooleanProperty darkMode = new SimpleBooleanProperty(false);
     public  static SimpleBooleanProperty updateAvailable = new SimpleBooleanProperty(false);
+    public  static FXWindowControl windowControl = null;
     private static boolean startUpdate = false;
 
     
@@ -55,7 +53,7 @@ public class App extends Application {
     public void start(Stage stage) {
         primaryStage = stage;
         setDefaultAppProps();
-        verifyUserProps();
+        loadUserAccount();
         setObservables();
         Scene mainScene = decideFirstPage();
 
@@ -70,37 +68,6 @@ public class App extends Application {
     }
 
 
-    
-
-    /**
-     * <p> Verify if there is a user registered and load all the properties of the application
-     * <p> such as user data, app configurations and saved logins.
-     */
-    private void verifyUserProps() {
-        if (FilesManager.haveUser) {
-            haveUser = true;
-            user = filesManager.openUserFile();
-            user.getPassword().retrievePass();
-            darkMode.set(user.isDarkMode());
-            stayLoggedIn = user.isStayLoggedIn();
-        }
-        if (!FilesManager.isConfigured)
-            configs = new AppConfigs(App.appVersion);
-        else configs = filesManager.getConfigs();
-
-        if (FilesManager.havePass) {
-            var loadedLogs = filesManager.openPassFile();
-            if (loadedLogs.checkPassOwnership(user)) {
-                logs = loadedLogs;
-                logs.newObservableList();
-                Collections.sort(logs);
-                for (Login login : logs) {
-                    login.getPassword().retrievePass();
-                }
-            }
-        }
-    }
-
 
     /**
      * <p> Save all the data of the application and close it properly.
@@ -108,20 +75,61 @@ public class App extends Application {
     private void closeApplication() {
         if(user != null) {
             System.out.println("Saving files");
-            user.getPassword().protectPassword();
-            if (logs != null) {
-                Collections.sort(logs);
-                for (Login login : logs) {
-                    login.getPassword().protectPassword();
-                }
-            }
-            user.setDarkMode(darkMode.get());
-            user.setStayLogged(stayLoggedIn);
-            filesManager.closeFiles(user, logs);
+            AccountManager.saveAccountData();
         } 
         System.out.println("Closing Application...");
     }
 
+
+    
+
+    /**
+     * <p> Verify if there is a user registered and load all the properties of the application
+     * <p> such as user data, app configurations and saved logins.
+     */
+    private void loadUserAccount() {
+        AccountManager.loadAccount();
+        haveUser = AccountManager.haveUser;
+        stayLoggedIn = AccountManager.stayLoggedIn;
+        user = AccountManager.user();
+        logs = AccountManager.logins();
+        configs = AccountManager.configs();
+    }
+
+    
+
+    /**
+     * <p> Delete the user account and all related data such as saved logins.
+     * <p> Returns true if the deletion was successful, false otherwise.
+     */
+    public static boolean deleteAccount() {
+        var deleted = AccountManager.deleteAccount();
+        if (deleted) {
+            user = null;
+            logs = null;
+            stayLoggedIn = false;
+            darkMode.set(false);
+            haveUser = AccountManager.haveUser;
+        }
+        windowControl.stopWindowControl();
+        windowControl = null;
+        return deleted;
+    }
+
+    public static void createAccount(AppUser pUser, Question[] questions, Answer[] answers) {
+        user = AccountManager.createAccount(pUser, questions, answers);
+        haveUser = AccountManager.haveUser;
+    }
+
+    /**
+     * <p> Update the user of the application.
+     * 
+     * <b> The attributes of the user should all be null except for the ones intending to change </b>
+     * @param updateUser - the user containing only the attributes to change.
+     */
+    public static void UpdateAccount(AppUser updateUser) {
+        AccountManager.updateAccountData(updateUser);
+    }
 
 
     /**
@@ -141,6 +149,7 @@ public class App extends Application {
     }
 
 
+
     public void setObservables() {
         darkMode.addListener((obs, oldV, newV) -> {
             var loadedControllers = SceneManager.getLoadedControllers();
@@ -150,18 +159,7 @@ public class App extends Application {
     }
 
 
-
-    /**
-     * <p> Delete the user account and all related data such as saved logins.
-     * <p> Returns true if the deletion was successful, false otherwise.
-     */
-    public static boolean deleteAccount() {
-        haveUser = false;
-        user = null;
-        return filesManager.deleteFiles();
-    }
-
-    public static Stage getStage() {return primaryStage;}
+    public static Stage getStage() {final var stage = primaryStage; return stage;}
     public static Scene getScene() {return primaryStage.getScene();}
 
 
@@ -189,12 +187,15 @@ public class App extends Application {
         primaryStage.setMinWidth(minW);
         primaryStage.setHeight(minH);
         primaryStage.setWidth(minW);
+        primaryStage.centerOnScreen();
     }
     
 
     public static void changePage(String sceneName) {
         primaryStage.hide();
+        primaryStage.setScene(null);
         primaryStage.setScene(SceneManager.loadPage(sceneName, App.class));
+        SceneManager.getController(sceneName);
         primaryStage.centerOnScreen();
         primaryStage.show();
     }

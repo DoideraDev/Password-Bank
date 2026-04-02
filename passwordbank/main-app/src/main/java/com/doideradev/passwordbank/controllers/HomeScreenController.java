@@ -114,6 +114,9 @@ public class HomeScreenController implements Controller {
             findMostUsedPass();
             findOldestPass();
             PasswordFXElement.setStokeByTheme();
+        } else {
+            gPaneLastUsed.getChildren().clear();
+            gPaneOldstReg.getChildren().clear();
         }
     }
 

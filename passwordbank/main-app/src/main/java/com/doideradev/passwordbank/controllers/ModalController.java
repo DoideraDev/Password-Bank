@@ -81,6 +81,7 @@ public class ModalController {
         buttonCancel.setOnMouseClicked(event -> closeModal());
         buttonCancel.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER) closeModal();});
         buttonSave.setOnMouseClicked(event -> saveChanges());
+        buttonSave.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER) saveChanges();});
         pFPassword.setOnKeyReleased(event -> {if(event.getCode() == KeyCode.ENTER) saveChanges();});
         buttonViewPass.setOnMousePressed(event -> {
             tFPassword.setText(pFPassword.getText());

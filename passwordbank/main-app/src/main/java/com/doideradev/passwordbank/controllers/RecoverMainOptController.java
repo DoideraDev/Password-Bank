@@ -48,8 +48,8 @@ public class RecoverMainOptController implements Controller {
     @FXML private VBox vBoxQuestions;
 
     public RecoverAccountController RecAccController;
-    private String[] questions = {App.user.getQuestion1(), App.user.getQuestion2(), App.user.getQuestion3()};
-    private String[] answers = {App.user.getAnswer1(), App.user.getAnswer2(), App.user.getAnswer3()};
+    private String[] questions = {"", " ", "App.user.getQuestion3()"};
+    private String[] answers = {"", "App.user.getAnswer2()", ""};
     private int currentIndex = 0;
 
     
@@ -65,10 +65,11 @@ public class RecoverMainOptController implements Controller {
         // Actions for the first page
         buttonConfirmEmail.setOnKeyPressed(event -> {
             if (event.getCode().equals(KeyCode.ENTER) && verifyUserInfo()) RecAccController.changePage(RecAccController.panePage2, true);
-            
+            secondPageActions();
         });
         buttonConfirmEmail.setOnMouseClicked(event -> {
             if (verifyUserInfo()) RecAccController.changePage(RecAccController.panePage2, true);
+            secondPageActions();
         });
         if (App.user.getMobileNumber() == null || App.user.getMobileNumber().isBlank()) {
             vBoxMain.getChildren().remove(vBoxPhoneNum);
@@ -99,6 +100,10 @@ public class RecoverMainOptController implements Controller {
 
 
         // Actions for the second page
+        
+    }
+
+    private void secondPageActions() {
         buttonNextQuestion.setOnKeyPressed(event -> {if(event.getCode().equals(KeyCode.ENTER))buttonQuestionsAction();});
         buttonNextQuestion.setOnMouseClicked(event -> buttonQuestionsAction());
         

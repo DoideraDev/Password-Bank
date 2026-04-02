@@ -73,18 +73,32 @@ public class FXWindowControl {
 
 
     
-    public FXWindowControl(Button minimize, Button maximize, Button close, Node icon) {
+    public FXWindowControl(Stage mainStage, Button minimize, Button maximize, Button close, Node icon) {
         bClose = close; bMaximize = maximize; bMinimize = minimize;
         this.icon = icon;
-        primaryStage = App.getStage();
+        primaryStage = mainStage;
         activeScene = primaryStage.getScene();
         parentNode = (BorderPane) activeScene.getRoot();
+        startWindowControl();
+    }
+
+
+    public void startWindowControl() {
         getBorders(parentNode);
         setScenePadding(true);
         setActions();
         tips();
     }
 
+
+    public void stopWindowControl() {
+        parentNode.setOnMouseMoved(null);
+        parentNode.setOnMouseClicked(null);
+        parentNode.setOnMouseDragged(null);
+        parentNode.setOnMousePressed(null);
+        parentNode.setOnMouseReleased(null);
+        parentNode = null;
+    }
 
 
     /**
@@ -131,14 +145,7 @@ public class FXWindowControl {
             moveOffSetX = (lastStageXPos - lastMouseXPos);
             moveOffSetY = (lastStageYPos - lastMouseYPos);
         });
-        parentNode.setOnMouseReleased(event -> {
-            if (primaryStage.getHeight() < App.defH) {
-                primaryStage.setHeight(App.defH);
-            }
-            if (primaryStage.getWidth() < App.defW) {
-                primaryStage.setWidth(App.defW);
-            }
-        });
+        parentNode.setOnMouseReleased(event -> sizeControl());
         icon.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2) {
                 parentNode.setOnMouseClicked(null);
@@ -505,8 +512,21 @@ public class FXWindowControl {
     }
 
 
+    private void sizeControl() {
+        if (primaryStage.getHeight() < App.defH) {
+            primaryStage.setHeight(App.defH);
+        }
+        if (primaryStage.getWidth() < App.defW) {
+            primaryStage.setWidth(App.defW);
+        }
+    }
 
 
+    
+    /**
+     * This method store the border elements of the stage in a list and also store their original styles. This is useful for later when we need to remove the round corners from the borders when the stage is maximized and restore them when the stage is restored.
+     * @param parentNode - the BorderPane that is the root of the scene, which contains the borders of the stage.
+     */
     private void getBorders(BorderPane parentNode) {
         topBorder = parentNode.getTop();
         if (topBorder != null) {

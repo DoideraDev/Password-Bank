@@ -70,6 +70,7 @@ public abstract class UpdaterManager {
                     System.out.println("Cause: " + e.getCause());
                     System.out.println("Stack trace: ");
                     e.printStackTrace();
+                    System.out.println("=========================================================================================\n");
                 }
             }
         });
@@ -124,17 +125,20 @@ public abstract class UpdaterManager {
         var updatePopup = createUpdateWindow();
         updatePopup.showAndWait();
 
-        if (updateConfirmed) new Thread() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(2000);
-                    Platform.exit();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        if (updateConfirmed) 
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(2000);
+                        Platform.exit();
+                    } catch (InterruptedException e) {
+                        System.out.println("InterruptedException occurred while exiting the application.");
+                        e.printStackTrace();
+                        System.out.println("=========================================================================================\n");
+                    }
                 }
-            }
-        }.start();
+            }.start();
         return updateConfirmed;
     }
 
@@ -160,8 +164,10 @@ public abstract class UpdaterManager {
             ////////////////////////////////////////////////////////////////////////////////
 
         } catch (IOException e) {
+            System.out.println("Error starting update process:");
             System.out.println(e.getMessage());
             e.printStackTrace();
+            System.out.println("=========================================================================================\n");
         }
     }
 

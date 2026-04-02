@@ -63,9 +63,8 @@ public class BaseController implements Controller {
         setButtonsStyle();
         setElementsStyle(App.darkMode.get());
         editMenuButtonsSize(menuMaximized);
-
         App.getStage().setOnShowing(event -> {
-            new FXWindowControl(buttonMinimize, buttonMaximize, buttonClose, appIcon);
+            App.windowControl = new FXWindowControl(App.getStage(), buttonMinimize, buttonMaximize, buttonClose, appIcon);
         });
     }
 
@@ -231,7 +230,7 @@ public class BaseController implements Controller {
         setTheme(darkMode, stackPaneMain);
         
         Text[] texts = {menuText, homeText, passText, settText};
-        setTextTheme(darkMode, texts);
+        setTextTheme(true, texts);
     }
 
 

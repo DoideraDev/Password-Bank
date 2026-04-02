@@ -61,9 +61,9 @@ public class PasswordScreenController implements Controller {
      * <p> if the application has no logins registered, nothing will be printed
      */
     protected void printLogins() {
+        gPanePassReg.getChildren().clear();
         if (App.logs != null) {    
             int rowCount = 0, colCount = 0;
-            gPanePassReg.getChildren().clear();
             for (Login login : logins) {
                 PasswordFXElement pass = new PasswordFXElement(login, true);
                 gPanePassReg.add(pass.getRoot(), colCount++, rowCount);

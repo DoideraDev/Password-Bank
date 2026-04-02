@@ -12,6 +12,7 @@ module com.doideradev.passwordbank {
     requires transitive com.doideradev.doiderautils;
     requires jdk.httpserver;
     requires org.eclipse.parsson;
+    requires javafx.base;
 
     opens com.doideradev.passwordbank to javafx.fxml;
     opens com.doideradev.passwordbank.controllers to javafx.fxml;
